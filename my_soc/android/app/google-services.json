@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "867687215377",
+    "project_id": "inheritance-f2871",
+    "storage_bucket": "inheritance-f2871.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867687215377:android:0a031a46898e7932d69cb0",
+        "android_client_info": {
+          "package_name": "com.example.my_soc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqzbvP5fM4rbbD1JYOhjkKUhKXfubH7Jk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
