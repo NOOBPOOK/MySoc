@@ -56,7 +56,13 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
             onPressed: () async {
               await sendVerificationEmail(context);
             },
-            child: const Text("Send Email"))
+            child: const Text("Send Email")),
+        ElevatedButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pushNamed(context, MySocRoutes.loginRoute);
+            },
+            child: const Text("Cancel Verification"))
       ],
     );
   }

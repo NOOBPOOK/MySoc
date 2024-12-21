@@ -102,6 +102,33 @@ class _LoginPageState extends State<LoginPage> {
                             foregroundColor: Colors.white),
                         child: const Text("Login with email"),
                       ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, MySocRoutes.signupRoute);
+                        },
+                        style: TextButton.styleFrom(
+                            minimumSize: const Size(120, 40),
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white),
+                        child: const Text("Signup Instead"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            await FirebaseAuth.instance.sendPasswordResetEmail(
+                                email: user_email_controller.text.trim());
+                          } catch (e) {
+                            setState(() {
+                              customMsg = e.toString();
+                            });
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                            minimumSize: const Size(120, 40),
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white),
+                        child: const Text("Forgot Password"),
+                      ),
                       Text(customMsg),
                     ],
                   ),

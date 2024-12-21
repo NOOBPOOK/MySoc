@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
         // initialRoute: MySocRoutes.signupRoute,
-        home: userExists ? const UserHome() : const SignupPage(),
+        home: userExists ? const UserHome() : const LoginPage(),
         routes: {
           MySocRoutes.signupRoute: (context) => const SignupPage(),
           MySocRoutes.loginRoute: (context) => const LoginPage(),
