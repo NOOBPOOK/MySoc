@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_soc/firebase_options.dart';
@@ -13,37 +15,31 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  bool userExists = false;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser != null) {
+      userExists = true;
+    }
+
+    print("Main root file was executed");
+    print(userExists);
+
     return MaterialApp(
         themeMode: ThemeMode.light,
         debugShowCheckedModeBanner: false,
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
         // initialRoute: MySocRoutes.signupRoute,
-        home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (snapshot.data != null) {
-                print(snapshot.data);
-                return const UserHome();
-              }
-              print("Called");
-              print(snapshot.data);
-              return const LoginPage();
-            }),
+        home: userExists ? const UserHome() : const SignupPage(),
         routes: {
           MySocRoutes.signupRoute: (context) => const SignupPage(),
           MySocRoutes.loginRoute: (context) => const LoginPage(),
