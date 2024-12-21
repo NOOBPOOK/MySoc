@@ -33,21 +33,23 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Material(
-        child: isEmailVerified
-            ? Column(
-                children: [
-                  const Text("Hello you are signed in"),
-                  Text(userDetails),
-                  ElevatedButton(
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        setState(() {});
-                      },
-                      child: const Text("Signout"))
-                ],
-              )
-            : const VerifyEmailMessagePage(),
+      body: SafeArea(
+        child: Material(
+          child: isEmailVerified
+              ? Column(
+                  children: [
+                    const Text("Hello you are signed in"),
+                    Text(userDetails),
+                    ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          setState(() {});
+                        },
+                        child: const Text("Signout"))
+                  ],
+                )
+              : const VerifyEmailMessagePage(),
+        ),
       ),
     );
   }

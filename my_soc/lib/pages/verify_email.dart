@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_soc/pages/user_home.dart';
 import 'package:my_soc/routes.dart';
 
 class VerifyEmailMessagePage extends StatefulWidget {
@@ -15,6 +16,7 @@ class VerifyEmailMessagePage extends StatefulWidget {
 
 class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
   Timer? timer;
+  bool isnotVerified = true;
 
   @override
   void dispose() {
@@ -27,7 +29,9 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
     var isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     if (isEmailVerified) {
       timer?.cancel();
-      await Navigator.pushNamed(context, MySocRoutes.homeRoute);
+      // await Navigator.pushNamed(context, MySocRoutes.homeRoute);
+      isnotVerified = false;
+      setState(() {});
     }
   }
 
@@ -46,15 +50,17 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text("Please verify your email"),
-        ElevatedButton(
-            onPressed: () async {
-              await sendVerificationEmail(context);
-            },
-            child: const Text("Send Email"))
-      ],
-    );
+    return isnotVerified
+        ? Column(
+            children: [
+              const Text("Please verify your email"),
+              ElevatedButton(
+                  onPressed: () async {
+                    await sendVerificationEmail(context);
+                  },
+                  child: const Text("Send Email"))
+            ],
+          )
+        : const UserHome();
   }
 }
