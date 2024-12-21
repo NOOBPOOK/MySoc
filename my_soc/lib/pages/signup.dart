@@ -19,33 +19,23 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController user_password_controller =
       TextEditingController();
 
-  Future<void> createUserAccount() async {
+  Future<void> createUserAccount(context) async {
     try {
       final userCreds = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: user_email_controller.text.trim(),
               password: user_password_controller.text.trim());
       customMsg = userCreds.toString();
-      print(userCreds);
-      setState(() {});
-      await Future.delayed(const Duration(seconds: 1));
-      await Navigator.pushNamed(context, MySocRoutes.loginRoute);
+      // print(userCreds);
+      // setState(() {});
+      // await Future.delayed(const Duration(seconds: 3));
+      await Navigator.pushNamed(context, MySocRoutes.emailVerify);
     } on FirebaseAuthException catch (e) {
       // This message is to be displayed on the screen as a popup incase of some errors
       customMsg = e.message.toString();
-      print(e.message);
+      setState(() {});
+      // print(e.message);
     }
-
-    setState(() {});
-    // if (_formKey.currentState!.validate()) {
-    //   setState(() {
-    //     islogin = true;
-    //   });
-    // await Future.delayed(Duration(seconds: 1));
-    // await Navigator.pushNamed(context, MyRoutes.homeRoute);
-    // setState(() {
-    //   islogin = false;
-    // });
   }
 
   @override
@@ -60,7 +50,7 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(
               height: 28.0,
             ),
-            const Text("Welcomen To MySoc",
+            const Text("This is our SignUp Page",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             Padding(
               padding:
@@ -108,7 +98,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      await createUserAccount();
+                      await createUserAccount(context);
                     },
                     style: TextButton.styleFrom(
                         minimumSize: const Size(120, 40),
