@@ -27,7 +27,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
         await FirebaseAuth.instance.currentUser!.emailVerified;
     if (isEmailVerified) {
       timer?.cancel();
-      await Navigator.pushNamed(context, MySocRoutes.homeRoute);
+      await Navigator.pushNamed(context, MySocRoutes.chooserPage);
       setState(() {});
     }
   }
