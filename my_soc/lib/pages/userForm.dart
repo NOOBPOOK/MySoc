@@ -313,7 +313,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             ? secondaryAddressController.text
             : null,
         'createdAt': FieldValue.serverTimestamp(),
-        'verifiedBy': "Admin",
+        'verifiedBy': isSec ? "Admin" : "",
         'verifiedDate': FieldValue.serverTimestamp(),
         'isVerified': isSec ? true : false,
         'lastUpdated': FieldValue.serverTimestamp(),

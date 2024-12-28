@@ -2,12 +2,16 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_soc/admin/admin_dashboard.dart';
+import 'package:my_soc/admin/admin_login_page.dart';
 import 'package:my_soc/firebase_options.dart';
 import 'package:my_soc/pages/buildingFom.dart';
 import 'package:my_soc/pages/chooser.dart';
 import 'package:my_soc/pages/login.dart';
 import 'package:my_soc/pages/maps.dart';
 import 'package:my_soc/pages/practice_images.dart';
+import 'package:my_soc/pages/secretary/role_access.dart';
+import 'package:my_soc/pages/secretary/sec_building_users.dart';
 import 'package:my_soc/pages/signup.dart';
 import 'package:my_soc/pages/userForm.dart';
 import 'package:my_soc/pages/user_home.dart';
@@ -65,6 +69,10 @@ class MyApp extends StatelessWidget {
               const BuildingRegistrationPage(),
           MySocRoutes.userForm: (context) => UserRegistrationPage(),
           MySocRoutes.chooserPage: (context) => const ChooserPage(),
+          MySocRoutes.secDashboardUsers: (context) => SecDashboardUsers(),
+          MySocRoutes.secDashboardUserDetails: (context) =>
+              SecDashboardUserDetails(),
+          MySocRoutes.secRoleBasedAccess: (context) => RoleAccessPage(),
         });
   }
 }

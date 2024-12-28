@@ -10,6 +10,7 @@
 analyzer:
   errors:
     depend_on_referenced_packages: ignore
+    non_constant_identifier_names: ignore
     prefer_const_constructors: ignore
     prefer_final_fields: ignore
     unused_field: ignore

@@ -6,4 +6,7 @@ class MySocRoutes {
   static const buildingForm = '/buildingForm';
   static const userForm = '/userForm';
   static const chooserPage = '/choose';
+  static const secDashboardUsers = '/secDashboardUsers';
+  static const secDashboardUserDetails = '/secDashboardUserDetails';
+  static const secRoleBasedAccess = '/secRoleBasedAccess';
 }

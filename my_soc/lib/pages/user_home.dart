@@ -14,7 +14,8 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
-  late Map UserDetails;
+  late QueryDocumentSnapshot UserDetails;
+  late DocumentSnapshot buildingDetails;
   bool isLoading = true;
   // bool isEmailVerified = true;
 
@@ -48,8 +49,13 @@ class _UserHomeState extends State<UserHome> {
               'Please create register your flat first before going ahead');
         }
 
-        print(userDetails.docs[0].data().runtimeType);
-        UserDetails = userDetails.docs[0].data() as Map<String, dynamic>;
+        UserDetails = userDetails.docs[0];
+
+        DocumentSnapshot building_details = await FirebaseFirestore.instance
+            .collection('buildings')
+            .doc(UserDetails['buildingId'])
+            .get();
+        buildingDetails = building_details;
 
         if (UserDetails['isVerified'] == false) {
           Future.delayed(Duration(seconds: 3), () async {
@@ -97,7 +103,31 @@ class _UserHomeState extends State<UserHome> {
                           FirebaseAuth.instance.signOut();
                           Navigator.pushNamed(context, MySocRoutes.loginRoute);
                         },
-                        child: const Text("Signout"))
+                        child: const Text("Signout")),
+
+                    // For testing adding secretary dashboard. In real case we need to only display this option for isSecretary fields == true people
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, MySocRoutes.secDashboardUsers,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Secretary Dashboard")),
+
+                    // For testing role based access allocation by secreatart. Exclusive for only secretary
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, MySocRoutes.secRoleBasedAccess,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Assign Roles and Designations!")),
                   ],
                 ),
               ),
