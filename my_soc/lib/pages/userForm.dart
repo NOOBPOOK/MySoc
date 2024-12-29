@@ -299,6 +299,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             ? otherPhoneController.text
             : null,
         'email': currUser?.email,
+        'designation': isSec ? 4 : 0,
         'flatNumber': flatNumberController.text,
         'floorNumber': int.parse(floorNumberController.text),
         'wing': wingController.text,
