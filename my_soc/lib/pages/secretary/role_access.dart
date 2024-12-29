@@ -59,8 +59,8 @@ class _RoleAccessPageState extends State<RoleAccessPage> {
                         right: 0,
                         child: ElevatedButton(
                             onPressed: () {
-                              Navigator.popAndPushNamed(
-                                  context, MySocRoutes.secRoleBasedAccess,
+                              Navigator.of(context).pushReplacementNamed(
+                                  MySocRoutes.secRoleBasedAccess,
                                   arguments: {
                                     'userDetails': user_details,
                                     'buildingDetails': build_details
