@@ -10,12 +10,16 @@ import 'package:my_soc/pages/chooser.dart';
 import 'package:my_soc/pages/login.dart';
 import 'package:my_soc/pages/maps.dart';
 import 'package:my_soc/pages/practice_images.dart';
+import 'package:my_soc/pages/previliged_pages/add_complaints.dart';
+import 'package:my_soc/pages/previliged_pages/complaints.dart';
+import 'package:my_soc/pages/previliged_pages/services_add.dart';
 import 'package:my_soc/pages/secretary/role_access.dart';
 import 'package:my_soc/pages/secretary/sec_building_users.dart';
 import 'package:my_soc/pages/signup.dart';
 import 'package:my_soc/pages/userForm.dart';
 import 'package:my_soc/pages/user_home.dart';
 import 'package:my_soc/pages/verify_email.dart';
+import 'package:my_soc/practice.dart';
 import 'package:my_soc/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -59,7 +63,7 @@ class MyApp extends StatelessWidget {
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
         // initialRoute: MySocRoutes.signupRoute,
-        home: userExists ? const UserHome() : LoginPage(),
+        home: userExists ? UserHome() : LoginPage(),
         routes: {
           MySocRoutes.signupRoute: (context) => const SignupPage(),
           MySocRoutes.loginRoute: (context) => const LoginPage(),
@@ -73,6 +77,9 @@ class MyApp extends StatelessWidget {
           MySocRoutes.secDashboardUserDetails: (context) =>
               SecDashboardUserDetails(),
           MySocRoutes.secRoleBasedAccess: (context) => RoleAccessPage(),
+          MySocRoutes.addServices: (context) => AddServices(),
+          MySocRoutes.complaints: (context) => ComplaintsPage(),
+          MySocRoutes.addComplaints: (context) => AddComplaints(),
         });
   }
 }

@@ -128,6 +128,29 @@ class _UserHomeState extends State<UserHome> {
                               });
                         },
                         child: Text("Assign Roles and Designations!")),
+
+                    // For testing adding services by secretary, chairman and treasurer. Pls apply checks for designation before calling
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, MySocRoutes.addServices,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Add Services Information")),
+
+                    // For testing adding complaints from Secretary. Pls apply checks for designation before calling
+                    // For testing adding services by secretary, chairman and treasurer. Pls apply checks for designation before calling
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, MySocRoutes.complaints,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Complaints/Suggestions")),
                   ],
                 ),
               ),

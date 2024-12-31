@@ -9,4 +9,7 @@ class MySocRoutes {
   static const secDashboardUsers = '/secDashboardUsers';
   static const secDashboardUserDetails = '/secDashboardUserDetails';
   static const secRoleBasedAccess = '/secRoleBasedAccess';
+  static const addServices = '/addServices';
+  static const complaints = '/complaints';
+  static const addComplaints = '/addComplaints';
 }
