@@ -133,6 +133,7 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
   }
 }
 
+// Public and Shared with you both use Display Public Complaints for displaying cards of complaints
 class publicComplaints extends StatefulWidget {
   final user_detials;
   final build_details;
@@ -150,6 +151,56 @@ class _publicComplaintsState extends State<publicComplaints> {
         .collection('complaints')
         .orderBy('status')
         .where('isPrivate', isEqualTo: false)
+        .snapshots();
+  }
+
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color.fromARGB(255, 207, 254, 247),
+      child: StreamBuilder(
+          stream: getPublicComplaints(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text("Something went Wrong ${snapshot.error}"),
+              );
+            }
+            if (snapshot.hasData) {
+              return DisplayPublicComplaints(
+                buildId: widget.build_details.id,
+                userId: widget.user_detials.id,
+                complaints: snapshot.data!.docs,
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          }),
+    );
+  }
+}
+
+class sharedWithYou extends StatefulWidget {
+  final user_detials;
+  final build_details;
+  const sharedWithYou({super.key, this.user_detials, this.build_details});
+
+  @override
+  State<sharedWithYou> createState() => _sharedWithYouState();
+}
+
+class _sharedWithYouState extends State<sharedWithYou> {
+  Stream getPublicComplaints() {
+    return FirebaseFirestore.instance
+        .collection('buildings')
+        .doc(widget.build_details.id)
+        .collection('complaints')
+        .orderBy('status')
+        .where('isPrivate', isEqualTo: true)
         .snapshots();
   }
 
@@ -308,6 +359,118 @@ class _DisplayPublicComplaintsState extends State<DisplayPublicComplaints> {
                                 fontSize: 14, color: Colors.grey[700]),
                           ),
                           SizedBox(height: 16),
+                          Container(
+                            height: 200,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount:
+                                  widget.complaints[index]['images'].length,
+                              itemBuilder: (context, imageIndex) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => Scaffold(
+                                          appBar: AppBar(
+                                            backgroundColor: Colors.black,
+                                            leading: IconButton(
+                                              icon: const Icon(Icons.close),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                          ),
+                                          body: Container(
+                                            color: Colors.black,
+                                            child: Center(
+                                              child: InteractiveViewer(
+                                                child: Image.network(
+                                                  widget.complaints[index]
+                                                      ['images'][imageIndex],
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border:
+                                          Border.all(color: Colors.grey[300]!),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Stack(
+                                        children: [
+                                          Image.network(
+                                            widget.complaints[index]['images']
+                                                [imageIndex],
+                                            height: 200,
+                                            width: 300,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Container(
+                                                height: 200,
+                                                width: 300,
+                                                color: Colors.grey[300],
+                                                child: const Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.error_outline,
+                                                      color: Colors.red,
+                                                      size: 48,
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Text(
+                                                      'Failed to load image',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          Positioned(
+                                            bottom: 8,
+                                            right: 8,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black54,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Text(
+                                                '${imageIndex + 1}/${widget.complaints[index]['images'].length}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -369,56 +532,7 @@ class _DisplayPublicComplaintsState extends State<DisplayPublicComplaints> {
   }
 }
 
-class sharedWithYou extends StatefulWidget {
-  final user_detials;
-  final build_details;
-  const sharedWithYou({super.key, this.user_detials, this.build_details});
-
-  @override
-  State<sharedWithYou> createState() => _sharedWithYouState();
-}
-
-class _sharedWithYouState extends State<sharedWithYou> {
-  Stream getPublicComplaints() {
-    return FirebaseFirestore.instance
-        .collection('buildings')
-        .doc(widget.build_details.id)
-        .collection('complaints')
-        .orderBy('status')
-        .where('isPrivate', isEqualTo: true)
-        .snapshots();
-  }
-
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color.fromARGB(255, 207, 254, 247),
-      child: StreamBuilder(
-          stream: getPublicComplaints(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text("Something went Wrong ${snapshot.error}"),
-              );
-            }
-            if (snapshot.hasData) {
-              return DisplayPublicComplaints(
-                buildId: widget.build_details.id,
-                userId: widget.user_detials.id,
-                complaints: snapshot.data!.docs,
-              );
-            } else {
-              return CircularProgressIndicator();
-            }
-          }),
-    );
-  }
-}
-
+// Your Complaints uses DisplayOwnComplaints for displaying cards of complaints
 class yourComplaints extends StatefulWidget {
   final user_detials;
   final build_details;
@@ -558,6 +672,132 @@ class _DisplayOwnComplaintsState extends State<DisplayOwnComplaints> {
                                 fontSize: 14, color: Colors.grey[700]),
                           ),
                           SizedBox(height: 16),
+                          Container(
+                            height: 200,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount:
+                                  widget.complaints[index]['images'].length,
+                              itemBuilder: (context, imageIndex) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => Scaffold(
+                                          appBar: AppBar(
+                                            backgroundColor: Colors.black,
+                                            leading: IconButton(
+                                              icon: const Icon(Icons.close),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                          ),
+                                          body: Container(
+                                            color: Colors.black,
+                                            child: Center(
+                                              child: InteractiveViewer(
+                                                child: Image.network(
+                                                  widget.complaints[index]
+                                                      ['images'][imageIndex],
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border:
+                                          Border.all(color: Colors.grey[300]!),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Stack(
+                                        children: [
+                                          Image.network(
+                                            widget.complaints[index]['images']
+                                                [imageIndex],
+                                            height: 200,
+                                            width: 300,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              } else {
+                                                return Container(
+                                                  child: Center(
+                                                      child:
+                                                          CircularProgressIndicator()),
+                                                );
+                                              }
+                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Container(
+                                                height: 200,
+                                                width: 300,
+                                                color: Colors.grey[300],
+                                                child: const Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.error_outline,
+                                                      color: Colors.red,
+                                                      size: 48,
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Text(
+                                                      'Failed to load image',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          Positioned(
+                                            bottom: 8,
+                                            right: 8,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black54,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Text(
+                                                '${imageIndex + 1}/${widget.complaints[index]['images'].length}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
