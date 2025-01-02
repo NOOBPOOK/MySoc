@@ -12,4 +12,8 @@ class MySocRoutes {
   static const addServices = '/addServices';
   static const complaints = '/complaints';
   static const addComplaints = '/addComplaints';
+  static const adminLogin = '/adminLogin';
+  static const adminDashboard = '/adminDashboard';
+  static const announcements = '/announcements';
+  static const penalties = '/penalties';
 }

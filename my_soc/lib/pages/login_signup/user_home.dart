@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_soc/pages/login_signup/login.dart';
 // import 'package:my_soc/pages/verify_email.dart';
 import 'package:my_soc/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -101,7 +102,12 @@ class _UserHomeState extends State<UserHome> {
                     ElevatedButton(
                         onPressed: () {
                           FirebaseAuth.instance.signOut();
-                          Navigator.pushNamed(context, MySocRoutes.loginRoute);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
+                            (route) => false,
+                          );
                         },
                         child: const Text("Signout")),
 
@@ -151,6 +157,29 @@ class _UserHomeState extends State<UserHome> {
                               });
                         },
                         child: Text("Complaints/Suggestions")),
+
+                    // For testing we are assuming that you are previliged user with atleast treasurer, secretary and chairman perms
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, MySocRoutes.announcements,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Announcements")),
+
+                    // For testing we are assuming that you are previliged user with atleast treasurer, secretary and chairman perms for applying fines
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, MySocRoutes.penalties,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Penalties"))
                   ],
                 ),
               ),
