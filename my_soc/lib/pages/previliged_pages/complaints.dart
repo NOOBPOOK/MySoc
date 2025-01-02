@@ -413,6 +413,20 @@ class _DisplayPublicComplaintsState extends State<DisplayPublicComplaints> {
                                             height: 200,
                                             width: 300,
                                             fit: BoxFit.cover,
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              } else {
+                                                return Container(
+                                                  height: 200,
+                                                  width: 300,
+                                                  child: Center(
+                                                      child:
+                                                          CircularProgressIndicator()),
+                                                );
+                                              }
+                                            },
                                             errorBuilder:
                                                 (context, error, stackTrace) {
                                               return Container(
@@ -732,6 +746,8 @@ class _DisplayOwnComplaintsState extends State<DisplayOwnComplaints> {
                                                 return child;
                                               } else {
                                                 return Container(
+                                                  height: 200,
+                                                  width: 300,
                                                   child: Center(
                                                       child:
                                                           CircularProgressIndicator()),
