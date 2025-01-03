@@ -1,3 +1,19 @@
+// Add this at the top of the file
+import java.util.Properties
+
+// Load .env file for passing env keys into AndroidManifest.xml file
+def loadDotEnv() {
+    Properties properties = new Properties()
+    def envFile = rootProject.file('.env')
+    if (envFile.exists()) {
+        envFile.withInputStream {
+            properties.load(it)
+        }
+    }
+    return properties
+}
+
+
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
@@ -22,7 +38,19 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
 
+    def env = loadDotEnv()
+
+    // This is added for passing env to gmap api
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
+        // Add environment variables as build config fields
+        // buildConfigField("String", "GmapKey", "\"${env['GmapKey']}\"")
+        manifestPlaceholders = [
+            GmapKey: "${env['GmapKey']}"
+        ]
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.my_soc"
         // You can update the following values to match your application needs.

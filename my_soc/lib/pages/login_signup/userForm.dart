@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:my_soc/routes.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserRegistrationPage extends StatefulWidget {
   const UserRegistrationPage({super.key});
@@ -72,9 +73,9 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
     }
 
     cloudinary = Cloudinary.signedConfig(
-      apiKey: "119748286486841",
-      apiSecret: "GS4oqjmKsv4eZ0Q8jX3-R-PjcsI",
-      cloudName: "doobgg47q",
+      apiKey: dotenv.env['CloudinaryApiKey'] ?? "",
+      apiSecret: dotenv.env['ColudinaryApiSecret'] ?? "",
+      cloudName: dotenv.env['ColudinaryCloudName'] ?? "",
     );
   }
 

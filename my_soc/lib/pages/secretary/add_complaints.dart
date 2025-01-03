@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_soc/routes.dart';
 import 'package:cloudinary/cloudinary.dart';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddComplaints extends StatefulWidget {
   const AddComplaints({super.key});
@@ -40,9 +41,9 @@ class _AddComplaintsState extends State<AddComplaints> {
     super.initState();
 
     cloudinary = Cloudinary.signedConfig(
-      apiKey: "119748286486841",
-      apiSecret: "GS4oqjmKsv4eZ0Q8jX3-R-PjcsI",
-      cloudName: "doobgg47q",
+      apiKey: dotenv.env['CloudinaryApiKey'] ?? "",
+      apiSecret: dotenv.env['ColudinaryApiSecret'] ?? "",
+      cloudName: dotenv.env['ColudinaryCloudName'] ?? "",
     );
   }
 

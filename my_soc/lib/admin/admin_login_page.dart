@@ -1,6 +1,7 @@
 // admin_login_page.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:my_soc/routes.dart';
 import 'admin_dashboard.dart';
 
 class AdminLoginPage extends StatefulWidget {
@@ -35,10 +36,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
         if (querySnapshot.docs.isNotEmpty) {
           // Login successful
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const AdminDashboard()),
-          );
+          Navigator.pushReplacementNamed(context, MySocRoutes.adminDashboard);
         } else {
           // Login failed
           ScaffoldMessenger.of(context).showSnackBar(
@@ -115,7 +113,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1565C0),
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50, vertical: 15),
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)

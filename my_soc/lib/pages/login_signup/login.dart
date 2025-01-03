@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_soc/admin/admin_login_page.dart';
 import 'package:my_soc/routes.dart';
 
 class LoginPage extends StatefulWidget {
@@ -129,6 +130,14 @@ class _LoginPageState extends State<LoginPage> {
                             foregroundColor: Colors.white),
                         child: const Text("Forgot Password"),
                       ),
+
+                      // For admin login we get
+                      ElevatedButton(
+                          onPressed: () async {
+                            Navigator.pushNamed(context, MySocRoutes.adminLogin);
+                          },
+                          child: Text("Admin Login Instead")),
+
                       Text(customMsg),
                     ],
                   ),
