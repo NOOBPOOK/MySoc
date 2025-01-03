@@ -24,8 +24,12 @@ import 'package:my_soc/pages/login_signup/verify_email.dart';
 import 'package:my_soc/practice/practice.dart';
 import 'package:my_soc/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  // Load the .env file
+  await dotenv.load(fileName: "C:/GithubRepos/MySoc/my_soc/.env");
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

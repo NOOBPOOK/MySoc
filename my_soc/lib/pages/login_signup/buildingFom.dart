@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloudinary/cloudinary.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:my_soc/routes.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class WingDetails {
   String wingName;
@@ -104,9 +105,9 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
     }
 
     cloudinary = Cloudinary.signedConfig(
-      apiKey: "119748286486841",
-      apiSecret: "GS4oqjmKsv4eZ0Q8jX3-R-PjcsI",
-      cloudName: "doobgg47q",
+      apiKey: dotenv.env['CloudinaryApiKey'] ?? "",
+      apiSecret: dotenv.env['ColudinaryApiSecret'] ?? "",
+      cloudName: dotenv.env['ColudinaryCloudName'] ?? "",
     );
   }
 
@@ -324,6 +325,7 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
         'verificationDate': null,
         'verifiedBy': null,
         'createdAt': FieldValue.serverTimestamp(),
+        'services': [],
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
