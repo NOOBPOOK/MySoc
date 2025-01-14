@@ -22,6 +22,8 @@ import 'package:my_soc/pages/login_signup/verify_email.dart';
 import 'package:my_soc/practice/practice.dart';
 import 'package:my_soc/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:my_soc/pages/download_maintenance_PDF.dart';
+import 'package:my_soc/pages/secretary/generate_maintenance_PDF.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +82,8 @@ class MyApp extends StatelessWidget {
           MySocRoutes.addServices: (context) => AddServices(),
           MySocRoutes.complaints: (context) => ComplaintsPage(),
           MySocRoutes.addComplaints: (context) => AddComplaints(),
+          MySocRoutes.downloadMaintenancePDF: (context) => const DownloadMaintenancePDF(),
+          MySocRoutes.generateMaintenancePDF: (context) => const GenerateMaintenancePDF(),
         });
   }
 }

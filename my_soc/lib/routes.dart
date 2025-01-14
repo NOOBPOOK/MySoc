@@ -12,4 +12,8 @@ class MySocRoutes {
   static const addServices = '/addServices';
   static const complaints = '/complaints';
   static const addComplaints = '/addComplaints';
+  // added by Advait
+  static const downloadMaintenancePDF = '/downloadMaintenancePDF';
+  static const generateMaintenancePDF = '/generateMaintenancePDF';
+
 }

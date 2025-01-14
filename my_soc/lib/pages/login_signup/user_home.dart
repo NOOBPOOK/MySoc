@@ -151,6 +151,27 @@ class _UserHomeState extends State<UserHome> {
                               });
                         },
                         child: Text("Complaints/Suggestions")),
+                    
+                    // code added by Advait Desai
+                    // Download Maintenance PDF
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, MySocRoutes.downloadMaintenancePDF,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Download Maintenance PDF")),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, MySocRoutes.generateMaintenancePDF,
+                              arguments: {
+                                'userDetails': UserDetails,
+                                'buildingDetails': buildingDetails,
+                              });
+                        },
+                        child: Text("Generate Maintenance PDF")),
                   ],
                 ),
               ),
