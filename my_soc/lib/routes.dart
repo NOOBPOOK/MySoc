@@ -13,7 +13,20 @@ class MySocRoutes {
   static const complaints = '/complaints';
   static const addComplaints = '/addComplaints';
   static const adminLogin = '/adminLogin';
+  static const adminHome = '/adminHome';
+  static const adminPayments = '/adminPayments';
   static const adminDashboard = '/adminDashboard';
   static const announcements = '/announcements';
   static const penalties = '/penalties';
+  static const createWatchman = '/createWatchman';
+  static const viewWatchman = '/viewWatchman';
+  static const watchmanLogin = '/watchmanLogin';
+  static const watchmanHome = '/watchmanHome';
+  static const viewRecordsCourriers = '/viewRecords';
+  static const buildingMaps = '/buildingMaps';
+  static const formMaps = '/chooseLocation';
+  static const generatePDF = '/generatePDF';
+  static const viewMainatainenanceJob = '/viewMainatainenanceJob';
+  static const viewDocDetails = '/viewDocDetails';
+  static const Maintain = '/maintain';
 }

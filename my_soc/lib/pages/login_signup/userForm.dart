@@ -57,7 +57,8 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
 
   User? currUser;
   late Cloudinary cloudinary;
-
+  List<String> _wingOptions = [];
+  bool _loadingWings = true;
   // For dynamic uplaod status
   double possStatus = 0.0;
   double utiStatus = 0.0;
@@ -97,6 +98,40 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
     }
 
     return null;
+  }
+
+  Future<void> fetchWingOptions() async {
+    try {
+      setState(() {
+        _loadingWings = true;
+      });
+
+      // Get the document based on buildingId
+      DocumentSnapshot buildingDoc = await FirebaseFirestore.instance
+          .collection('buildings')
+          .doc(buildingIdController.text.trim())
+          .get();
+
+      if (buildingDoc.exists) {
+        final data = buildingDoc.data() as Map<String, dynamic>;
+        if (data.containsKey('wings')) {
+          List<dynamic> wings = data['wings'];
+          _wingOptions =
+              wings.map((wing) => wing['wingName'] as String).toList();
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching wings: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _loadingWings = false;
+      });
+    }
   }
 
   Future<void> _pickProfilePhoto() async {
@@ -301,7 +336,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             : null,
         'email': currUser?.email,
         'designation': isSec ? 4 : 0,
-        'flatNumber': flatNumberController.text,
+        'flatNumber': int.tryParse(flatNumberController.text) ?? 0,
         'floorNumber': int.parse(floorNumberController.text),
         'wing': wingController.text,
         'familyMembers': int.parse(familyMembersController.text),
@@ -320,6 +355,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
         'isVerified': isSec ? true : false,
         'lastUpdated': FieldValue.serverTimestamp(),
         'isSecretary': isSec ? true : false,
+        'deviceToken': "",
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -425,17 +461,19 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
       if (build.exists) {
         buildData = build.data() as Map<String, dynamic>;
         if (buildData['isVerified'] == false) {
-          throw Exception('Builiding is yet to be verified!');
+          throw Exception('Building is yet to be verified!');
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Your Building name is ${buildData['buildingName']}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
           ),
         );
         setState(() {
           isValidBuilding = true;
         });
+        // Fetch wings after building is validated
+        await fetchWingOptions();
       } else {
         throw Exception('Invalid Building ID');
       }
@@ -681,15 +719,35 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                   ),
                   SizedBox(height: 16),
 
-                  TextFormField(
-                    controller: wingController,
+                  DropdownButtonFormField<String>(
+                    value: wingController.text.isEmpty
+                        ? null
+                        : wingController.text,
                     decoration: InputDecoration(
                       labelText: "Wing",
                       prefixIcon: Icon(Icons.business),
                     ),
+                    items: _loadingWings
+                        ? [
+                            DropdownMenuItem(
+                                value: null, child: Text("Loading..."))
+                          ]
+                        : _wingOptions.map((String wing) {
+                            return DropdownMenuItem(
+                              value: wing,
+                              child: Text(wing),
+                            );
+                          }).toList(),
+                    onChanged: isValidBuilding
+                        ? (String? newValue) {
+                            setState(() {
+                              wingController.text = newValue ?? '';
+                            });
+                          }
+                        : null,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter wing';
+                        return 'Please select a wing';
                       }
                       return null;
                     },

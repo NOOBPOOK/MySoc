@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:my_soc/admin/admin_login_page.dart';
 import 'package:my_soc/routes.dart';
 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -134,9 +135,18 @@ class _LoginPageState extends State<LoginPage> {
                       // For admin login we get
                       ElevatedButton(
                           onPressed: () async {
-                            Navigator.pushNamed(context, MySocRoutes.adminLogin);
+                            Navigator.pushNamed(
+                                context, MySocRoutes.adminLogin);
                           },
                           child: Text("Admin Login Instead")),
+
+                      // For admin login we get
+                      ElevatedButton(
+                          onPressed: () async {
+                            Navigator.pushNamed(
+                                context, MySocRoutes.watchmanLogin);
+                          },
+                          child: Text("Watchman Login Instead")),
 
                       Text(customMsg),
                     ],

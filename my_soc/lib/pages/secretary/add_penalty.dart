@@ -5,6 +5,8 @@ import 'package:cloudinary/cloudinary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AddPenalty extends StatefulWidget {
   final user_data;
@@ -192,6 +194,46 @@ class _AddPenaltyState extends State<AddPenalty> {
     if (picked != null) setState(() => _dueDate = picked);
   }
 
+  sendPenaltyNoti(
+      {desingation = 0,
+      amount = 0,
+      reason = "",
+      residentName = "",
+      userId = ""}) async {
+    try {
+      final url = Uri.parse('http://192.168.29.138:3000/penalty');
+
+      List arr = [
+        'Member',
+        'Committee Member',
+        'Treasurer',
+        'Chairperon',
+        'Secretary'
+      ];
+
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> body = {
+        'user_id': userId,
+        'designator': arr[desingation],
+        'amount': amount,
+        'reason': reason,
+        'residentName': residentName,
+      };
+      String jsonBody = json.encode(body);
+      final response = await http.post(url, headers: headers, body: jsonBody);
+
+      if (response.statusCode == 201) {
+        var data = json.decode(response.body);
+      } else {
+        print("User has not registered yet with the application");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Future<void> _submitPenalty() async {
     if (!_formKey.currentState!.validate()) return;
     if (_dueDate == null) {
@@ -228,14 +270,15 @@ class _AddPenaltyState extends State<AddPenalty> {
         'reason': _reasonController.text.trim(),
         'amount': double.parse(_amountController.text.trim()),
         'proofImage': _imageUrl,
-        'createdAt': FieldValue.serverTimestamp(),
+        'createdAt': Timestamp.now(),
         'createdBy':
             '${widget.user_data['firstName']} ${widget.user_data['lastName']}',
         'createdById': widget.user_data.id.toString(),
         'createdByDesignation': widget.user_data[
             'designation'], //While displaying the designation map it to suitable pronouns
         'dueDate': _dueDate?.toIso8601String(),
-        'status': 'pending'
+        'status': false,
+        'pay_id': ""
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -244,10 +287,22 @@ class _AddPenaltyState extends State<AddPenalty> {
           backgroundColor: Colors.green,
         ),
       );
+      Navigator.of(context).pop();
+
+      sendPenaltyNoti(
+        residentName: _residentName,
+        userId: _residentId,
+        desingation: widget.user_data['designation'],
+        reason: _reasonController.text.trim(),
+        amount: double.parse(_amountController.text.trim()),
+      );
       _clearFields();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+          content: Text('Error: $e'),
+          duration: Duration(seconds: 3),
+        ),
       );
     } finally {
       setState(() => _isLoading = false);

@@ -1,15 +1,28 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:my_soc/admin/admin_dashboard.dart';
+import 'package:my_soc/admin/admin_payments.dart';
+import 'package:my_soc/admin/admin_verification.dart';
 import 'package:my_soc/admin/admin_login_page.dart';
+import 'package:my_soc/admin/map_build.dart';
 import 'package:my_soc/firebase_options.dart';
 import 'package:my_soc/pages/login_signup/buildingFom.dart';
+import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/pages/login_signup/chooser.dart';
 import 'package:my_soc/pages/login_signup/login.dart';
 import 'package:my_soc/pages/secretary/announcements.dart';
+import 'package:my_soc/pages/secretary/create_watchman.dart';
+import 'package:my_soc/pages/secretary/generate_maintain.dart';
+import 'package:my_soc/pages/secretary/maintain.dart';
 import 'package:my_soc/pages/secretary/penalties.dart';
+import 'package:my_soc/pages/secretary/viewLogs.dart';
+import 'package:my_soc/pages/secretary/view_maintain.dart';
+import 'package:my_soc/pages/secretary/watchman.dart';
+import 'package:my_soc/pages/watchman/home_watch.dart';
+import 'package:my_soc/pages/watchman/login.dart';
 import 'package:my_soc/practice/maps.dart';
 import 'package:my_soc/practice/practice_images.dart';
 import 'package:my_soc/pages/secretary/add_complaints.dart';
@@ -34,6 +47,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(MyApp());
 }
 
@@ -88,8 +102,22 @@ class MyApp extends StatelessWidget {
           MySocRoutes.addComplaints: (context) => AddComplaints(),
           MySocRoutes.adminDashboard: (context) => AdminDashboard(),
           MySocRoutes.adminLogin: (context) => AdminLoginPage(),
+          MySocRoutes.adminHome: (context) => AdminHome(),
           MySocRoutes.announcements: (context) => AnnouncementsPage(),
           MySocRoutes.penalties: (context) => PenaltiesPage(),
+          MySocRoutes.createWatchman: (context) => WatchmanForm(),
+          MySocRoutes.viewWatchman: (context) => WatchmanPage(),
+          MySocRoutes.watchmanLogin: (context) => WatchmanLogin(),
+          MySocRoutes.watchmanHome: (context) => WatchmanHome(),
+          MySocRoutes.viewRecordsCourriers: (context) => ViewRecordsCourriers(),
+          MySocRoutes.buildingMaps: (context) => BuildingMaps(),
+          MySocRoutes.formMaps: (context) => ChooseLocation(),
+          MySocRoutes.adminPayments: (context) => AdminPayments(),
+          MySocRoutes.generatePDF: (context) => CreateMaintain(),
+          MySocRoutes.viewMainatainenanceJob: (context) =>
+              ViewMainatainenanceJob(),
+          MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
+          MySocRoutes.Maintain: (context) => Maintain(),
         });
   }
 }

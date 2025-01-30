@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloudinary/cloudinary.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -326,6 +327,7 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
         'verifiedBy': null,
         'createdAt': FieldValue.serverTimestamp(),
         'services': [],
+        'isRejected': false,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -717,29 +719,17 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
                   _buildSectionHeader('Location Information'),
                   SizedBox(height: 20),
 
-                  Center(
-                    child: Container(
-                      height: 300,
-                      width: 300,
-                      child: GoogleMap(
-                        initialCameraPosition:
-                            CameraPosition(target: current_location, zoom: 50),
-                        mapType: MapType.satellite,
-                        onMapCreated: (controller) =>
-                            _mapController = controller,
-                        onTap: movePointer,
-                        markers: {
-                          Marker(
-                              markerId: MarkerId('selected-location'),
-                              position: current_location)
-                        },
-                      ),
-                    ),
-                  ),
-
                   ElevatedButton(
-                      onPressed: getCurrentLocation,
-                      child: Text("Current Location")),
+                      onPressed: () async {
+                        final location = await Navigator.pushNamed(
+                                context, MySocRoutes.formMaps,
+                                arguments: {'location': current_location})
+                            as LatLng;
+                        setState(() {
+                          current_location = location;
+                        });
+                      },
+                      child: Text("Current Location $current_location")),
 
                   // Submit Button
                   Container(
