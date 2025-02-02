@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class AddPenalty extends StatefulWidget {
   final user_data;
@@ -48,6 +49,7 @@ class _AddPenaltyState extends State<AddPenalty> {
     _fetchBuildingAndResidents();
   }
 
+  // Keep all the existing methods for data fetching and processing
   Future<void> _fetchBuildingAndResidents() async {
     setState(() => _isLoading = true);
     try {
@@ -63,9 +65,7 @@ class _AddPenaltyState extends State<AddPenalty> {
       });
       await _fetchResidents();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching data: $e')),
-      );
+      _showErrorMessage('Error fetching data: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -84,17 +84,13 @@ class _AddPenaltyState extends State<AddPenalty> {
 
   Future<void> _searchResident() async {
     if (_selectedWing == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a wing')),
-      );
+      _showErrorMessage('Please select a wing');
       return;
     }
 
     final flatNumber = _flatNumberController.text.trim();
     if (flatNumber.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a flat number')),
-      );
+      _showErrorMessage('Please enter a flat number');
       return;
     }
 
@@ -114,27 +110,15 @@ class _AddPenaltyState extends State<AddPenalty> {
         if (resident != null) {
           _residentName = '${resident['firstName']} ${resident['lastName']}';
           _residentId = resident.id.toString();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Resident found: $_residentName'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          _showSuccessMessage('Resident found: $_residentName');
         } else {
           _residentName = null;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  'No resident found in Wing $_selectedWing, Flat $flatNumber'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showErrorMessage(
+              'No resident found in Wing $_selectedWing, Flat $flatNumber');
         }
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error searching resident: $e')),
-      );
+      _showErrorMessage('Error searching resident: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -151,9 +135,7 @@ class _AddPenaltyState extends State<AddPenalty> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error selecting image: $e')),
-      );
+      _showErrorMessage('Error selecting image: $e');
     }
   }
 
@@ -178,9 +160,7 @@ class _AddPenaltyState extends State<AddPenalty> {
         throw Exception('Failed to upload image');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading image: $e')),
-      );
+      _showErrorMessage('Error uploading image: $e');
     }
   }
 
@@ -194,12 +174,13 @@ class _AddPenaltyState extends State<AddPenalty> {
     if (picked != null) setState(() => _dueDate = picked);
   }
 
-  sendPenaltyNoti(
-      {desingation = 0,
-      amount = 0,
-      reason = "",
-      residentName = "",
-      userId = ""}) async {
+  Future<void> sendPenaltyNoti({
+    desingation = 0,
+    amount = 0,
+    reason = "",
+    residentName = "",
+    userId = "",
+  }) async {
     try {
       final url = Uri.parse('http://192.168.29.138:3000/penalty');
 
@@ -211,9 +192,7 @@ class _AddPenaltyState extends State<AddPenalty> {
         'Secretary'
       ];
 
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-      };
+      Map<String, String> headers = {'Content-Type': 'application/json'};
       Map<String, dynamic> body = {
         'user_id': userId,
         'designator': arr[desingation],
@@ -224,9 +203,7 @@ class _AddPenaltyState extends State<AddPenalty> {
       String jsonBody = json.encode(body);
       final response = await http.post(url, headers: headers, body: jsonBody);
 
-      if (response.statusCode == 201) {
-        var data = json.decode(response.body);
-      } else {
+      if (response.statusCode != 201) {
         print("User has not registered yet with the application");
       }
     } catch (e) {
@@ -237,16 +214,11 @@ class _AddPenaltyState extends State<AddPenalty> {
   Future<void> _submitPenalty() async {
     if (!_formKey.currentState!.validate()) return;
     if (_dueDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a due date')),
-      );
+      _showErrorMessage('Please select a due date');
       return;
     }
     if (_residentName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please search and select a valid resident')),
-      );
+      _showErrorMessage('Please search and select a valid resident');
       return;
     }
 
@@ -255,8 +227,6 @@ class _AddPenaltyState extends State<AddPenalty> {
       if (_proofImage != null && _imageUrl == null) {
         await _uploadImage();
       }
-
-      final user = FirebaseAuth.instance.currentUser;
 
       await FirebaseFirestore.instance
           .collection('buildings')
@@ -274,342 +244,531 @@ class _AddPenaltyState extends State<AddPenalty> {
         'createdBy':
             '${widget.user_data['firstName']} ${widget.user_data['lastName']}',
         'createdById': widget.user_data.id.toString(),
-        'createdByDesignation': widget.user_data[
-            'designation'], //While displaying the designation map it to suitable pronouns
+        'createdByDesignation': widget.user_data['designation'],
         'dueDate': _dueDate?.toIso8601String(),
         'status': false,
         'pay_id': ""
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Penalty added successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      Navigator.of(context).pop();
+      _showSuccessMessage('Penalty added successfully');
 
-      sendPenaltyNoti(
+      await sendPenaltyNoti(
         residentName: _residentName,
         userId: _residentId,
         desingation: widget.user_data['designation'],
         reason: _reasonController.text.trim(),
         amount: double.parse(_amountController.text.trim()),
       );
-      _clearFields();
+
+      Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      _showErrorMessage('Error: $e');
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  void _clearFields() {
-    _formKey.currentState?.reset();
-    _flatNumberController.clear();
-    _reasonController.clear();
-    _amountController.clear();
-    setState(() {
-      _selectedWing = null;
-      _residentName = null;
-      _proofImage = null;
-      _imageUrl = null;
-      _dueDate = null;
-      uploadProgress = 0.0;
-    });
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _showSuccessMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Penalty', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF1565C0),
-        elevation: 2,
-      ),
-      body: _isLoading && _residents.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.blue[50]!, Colors.white],
-                ),
-              ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (_buildingName != null)
-                        Card(
-                          elevation: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              'Building: $_buildingName',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: AnimationLimiter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: AnimationConfiguration.toStaggeredList(
+                          duration: const Duration(milliseconds: 800),
+                          childAnimationBuilder: (widget) => SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(child: widget),
                           ),
-                        ),
-                      const SizedBox(height: 20),
-                      Card(
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              DropdownButtonFormField<String>(
-                                value: _selectedWing,
-                                decoration: const InputDecoration(
-                                  labelText: 'Wing',
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: _wings.map((wing) {
-                                  return DropdownMenuItem(
-                                    value: wing,
-                                    child: Text(wing),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedWing = value;
-                                    _residentName = null;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please select a wing';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _flatNumberController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Flat Number',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter a flat number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  ElevatedButton.icon(
-                                    onPressed:
-                                        _isLoading ? null : _searchResident,
-                                    icon: _isLoading
-                                        ? const SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : const Icon(Icons.search),
-                                    label: const Text('Search'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 15,
-                                        horizontal: 20,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (_residentName != null) ...[
-                                const SizedBox(height: 15),
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green[50],
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.green),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.person,
-                                          color: Colors.green),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          'Resident: $_residentName',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(height: 20),
-                              TextFormField(
-                                controller: _reasonController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Reason for Penalty',
-                                  border: OutlineInputBorder(),
-                                ),
-                                maxLines: 3,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a reason';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              TextFormField(
-                                controller: _amountController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Penalty Amount',
-                                  border: OutlineInputBorder(),
-                                  prefixText: '₹ ',
-                                ),
-                                keyboardType: TextInputType.number,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter an amount';
-                                  }
-                                  if (double.tryParse(value) == null) {
-                                    return 'Please enter a valid number';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
+                          children: [
+                            _buildHeader(),
+                            const SizedBox(height: 32),
+                            _buildResidentSearch(),
+                            const SizedBox(height: 24),
+                            _buildPenaltyDetails(),
+                            const SizedBox(height: 24),
+                            _buildImageUpload(),
+                            const SizedBox(height: 32),
+                            _buildSubmitButton(),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Card(
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Due Date: ${_dueDate?.toString().split(' ')[0] ?? 'Not selected'}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton.icon(
-                                onPressed: _selectDueDate,
-                                icon: const Icon(Icons.calendar_today),
-                                label: const Text('Select Due Date'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Card(
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              InkWell(
-                                onTap: _pickImage,
-                                child: Container(
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue[50],
-                                    borderRadius: BorderRadius.circular(10),
-                                    border:
-                                        Border.all(color: Colors.blue[200]!),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.image,
-                                          color: Colors.blue[700]),
-                                      const SizedBox(width: 15),
-                                      Expanded(
-                                        child: Text(
-                                          _proofImage != null
-                                              ? 'Image selected: ${_proofImage!.path.split('/').last}'
-                                              : 'Upload Proof (Image)',
-                                          style: TextStyle(
-                                            color: Colors.blue[700],
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              if (_proofImage != null) ...[
-                                const SizedBox(height: 10),
-                                Image.file(_proofImage!, height: 150),
-                                const SizedBox(height: 10),
-                                if (_imageUrl == null) ...[
-                                  ElevatedButton(
-                                    onPressed: _uploadImage,
-                                    child: const Text("Upload Image"),
-                                  ),
-                                  if (uploadProgress > 0 && uploadProgress < 1)
-                                    LinearProgressIndicator(
-                                        value: uploadProgress),
-                                ] else
-                                  const Icon(Icons.check_circle,
-                                      color: Colors.green),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: _isLoading ? null : _submitPenalty,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : const Text(
-                                'Submit Penalty',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                              ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
+              if (_isLoading) _buildLoadingOverlay(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white70, size: 20),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        const SizedBox(width: 16),
+        const Expanded(
+          child: Text(
+            'Create Penalty',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResidentSearch() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.1),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Resident Details',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          DropdownButtonFormField<String>(
+            value: _selectedWing,
+            decoration: InputDecoration(
+              hintText: "Select Wing",
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              labelText: "Wing",
+              labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE94560), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.05),
+            ),
+            dropdownColor: const Color(0xFF1A1A2E),
+            items: _wings.map((wing) {
+              return DropdownMenuItem(
+                value: wing,
+                child: Text(
+                  wing,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedWing = value;
+                _residentName = null;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _flatNumberController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Enter flat number",
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    labelText: "Flat Number",
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Color(0xFFE94560), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.05),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              ElevatedButton(
+                onPressed: _searchResident,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE94560),
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Icon(Icons.search, color: Colors.white),
+              ),
+            ],
+          ),
+          if (_residentName != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE94560).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFE94560).withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.person,
+                    color: Color(0xFFE94560),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _residentName!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPenaltyDetails() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.1),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Penalty Details',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            controller: _reasonController,
+            style: const TextStyle(color: Colors.white),
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: "Enter reason for penalty",
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              labelText: "Reason",
+              labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE94560), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.05),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            controller: _amountController,
+            style: const TextStyle(color: Colors.white),
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: "Enter penalty amount",
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              labelText: "Amount (₹)",
+              labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+              prefixIcon: const Icon(Icons.currency_rupee, color: Color(0xFFE94560)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE94560), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.05),
+            ),
+          ),
+          const SizedBox(height: 20),
+          InkWell(
+            onTap: _selectDueDate,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                ),
+                color: Colors.white.withOpacity(0.05),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_today,
+                    color: Color(0xFFE94560),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    _dueDate != null
+                        ? 'Due Date: ${_dueDate!.toString().split(' ')[0]}'
+                        : 'Select Due Date',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageUpload() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.1),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Proof Image',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          InkWell(
+            onTap: _pickImage,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFE94560).withOpacity(0.3),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    _proofImage != null ? Icons.check_circle : Icons.cloud_upload,
+                    color: const Color(0xFFE94560),
+                    size: 48,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _proofImage != null
+                        ? 'Image Selected'
+                        : 'Upload Proof Image',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (_proofImage == null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        'Tap to browse files',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          if (_proofImage != null) ...[
+            const SizedBox(height: 20),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.file(
+                _proofImage!,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            if (uploadProgress > 0 && uploadProgress < 1)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: LinearProgressIndicator(
+                  value: uploadProgress,
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE94560)),
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _isLoading ? null : _submitPenalty,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFE94560),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 8,
+          shadowColor: const Color(0xFFE94560).withOpacity(0.5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _isLoading ? 'Submitting...' : 'Submit Penalty',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (!_isLoading) ...[
+              const SizedBox(width: 8),
+              const Icon(Icons.send, size: 20),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.black54,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE94560)),
+                strokeWidth: 3,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Processing...',
+                style: TextStyle(
+                  color: Colors.black.withOpacity(0.7),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

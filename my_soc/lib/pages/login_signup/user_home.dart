@@ -1,16 +1,14 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:my_soc/main.dart';
 import 'package:my_soc/pages/login_signup/login.dart';
-// import 'package:my_soc/pages/verify_email.dart';
 import 'package:my_soc/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class UserHome extends StatefulWidget {
-  // final dynamic userDetails;
-
   const UserHome({super.key});
 
   @override
@@ -18,145 +16,112 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
-  late QueryDocumentSnapshot UserDetails;
+  late QueryDocumentSnapshot userDetails;
   late DocumentSnapshot buildingDetails;
   bool isLoading = true;
   final FlutterLocalNotificationsPlugin _plugins =
       FlutterLocalNotificationsPlugin();
   late NotificationDetails platformChannelSpecifics;
-  // bool isEmailVerified = true;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        var userAuth = FirebaseAuth.instance.currentUser!;
-        if (userAuth.emailVerified != true) {
-          Future.delayed(Duration(seconds: 3), () async {
-            await Navigator.pushNamedAndRemoveUntil(
-                context, MySocRoutes.emailVerify, (route) => false);
-          });
-          throw Exception('Please verify your email first');
-        }
-
-        QuerySnapshot userDetails = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', isEqualTo: userAuth.email.toString())
-            .get();
-
-        if (userDetails.docs.isEmpty) {
-          Future.delayed(Duration(seconds: 3), () async {
-            await Navigator.pushNamedAndRemoveUntil(
-                context, MySocRoutes.chooserPage, (route) => false);
-          });
-
-          throw Exception(
-              'Please create register your flat first before going ahead');
-        }
-
-        UserDetails = userDetails.docs[0];
-
-        DocumentSnapshot building_details = await FirebaseFirestore.instance
-            .collection('buildings')
-            .doc(UserDetails['buildingId'])
-            .get();
-        buildingDetails = building_details;
-
-        if (UserDetails['isVerified'] == false) {
-          Future.delayed(Duration(seconds: 3), () async {
-            await Navigator.pushNamedAndRemoveUntil(
-                context, MySocRoutes.loginRoute, (route) => false);
-          });
-
-          throw Exception(
-              'Your account is yet to be verified. We will inform shortly');
-        }
-
-        setState(() {
-          isLoading = false;
-        });
-
-        // Code for handling local notifications
-        const AndroidInitializationSettings initializationSettingsAndroid =
-            AndroidInitializationSettings('@mipmap/ic_launcher');
-
-        const InitializationSettings initializationSettings =
-            InitializationSettings(android: initializationSettingsAndroid);
-
-        await _plugins.initialize(initializationSettings);
-        print("Intialization done");
-
-        _createNotificationChannel();
-
-        _getDeviceToken();
-        _setupTokenRefreshListener();
-
-        _setupForegroundNotification();
-        _setupBackgroundNotification();
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-
-      // For notification permission in the app
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      NotificationSettings settings = await messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print('User granted permission');
-      } else {
-        print('User declined or has not granted permission');
-      }
-    });
+    _initializeUserData();
+    _setupNotifications();
   }
 
-  // Get the initial device token for notification purposes
-  Future<void> _getDeviceToken() async {
-    String? token = await FirebaseMessaging.instance.getToken();
-    print("Initial Device Token: $token");
+  Future<void> _initializeUserData() async {
     try {
-      await FirebaseFirestore.instance
+      final userAuth = FirebaseAuth.instance.currentUser!;
+      if (!userAuth.emailVerified) {
+        await Navigator.pushNamedAndRemoveUntil(
+          context,
+          MySocRoutes.emailVerify,
+          (route) => false,
+        );
+        throw Exception('Please verify your email first');
+      }
+
+      final userSnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(UserDetails.id)
-          .update({
-        // For now sending token without any security compression
-        'deviceToken': token
-      });
+          .where('email', isEqualTo: userAuth.email)
+          .get();
+
+      if (userSnapshot.docs.isEmpty) {
+        await Navigator.pushNamedAndRemoveUntil(
+          context,
+          MySocRoutes.chooserPage,
+          (route) => false,
+        );
+        throw Exception('Please register your flat first before proceeding.');
+      }
+
+      userDetails = userSnapshot.docs[0];
+      buildingDetails = await FirebaseFirestore.instance
+          .collection('buildings')
+          .doc(userDetails['buildingId'])
+          .get();
+
+      if (!userDetails['isVerified']) {
+        await Navigator.pushNamedAndRemoveUntil(
+          context,
+          MySocRoutes.loginRoute,
+          (route) => false,
+        );
+        throw Exception(
+            'Your account is not verified yet. We will inform you shortly.');
+      }
+
+      setState(() => isLoading = false);
     } catch (e) {
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$e'), backgroundColor: Colors.red),
+      );
     }
   }
 
-  // Set up the listener for token refresh
+  Future<void> _setupNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await _plugins.initialize(initializationSettings);
+
+    _createNotificationChannel();
+    _getDeviceToken();
+    _setupTokenRefreshListener();
+    _setupForegroundNotification();
+    _setupBackgroundNotification();
+  }
+
+  Future<void> _getDeviceToken() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    print("Device Token: $token");
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userDetails.id)
+          .update({'deviceToken': token});
+    } catch (e) {
+      print('Error updating device token: $e');
+    }
+  }
+
   void _setupTokenRefreshListener() {
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       try {
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(UserDetails.id)
-            .update({
-          // For now sending token without any security compression
-          'deviceToken': newToken
-        });
+            .doc(userDetails.id)
+            .update({'deviceToken': newToken});
       } catch (e) {
-        print(e);
+        print('Error updating refreshed token: $e');
       }
     });
   }
 
-  // Listen for Foreground notifications
   void _setupForegroundNotification() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      // Show notification in app drawer
       await _plugins.show(
         0,
         message.notification!.title,
@@ -166,7 +131,6 @@ class _UserHomeState extends State<UserHome> {
     });
   }
 
-  // Listen for Background Notification
   void _setupBackgroundNotification() {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.data.isNotEmpty) {
@@ -175,34 +139,35 @@ class _UserHomeState extends State<UserHome> {
     });
   }
 
-  // Universal Notification Handler
-  void _navigateNotification(data) {
-    // print("This function was called");
-    if (data['screen'] == "courriers") {
-      Navigator.pushNamed(context, MySocRoutes.viewRecordsCourriers,
-          arguments: {
-            'userDetails': UserDetails,
-            'buildingDetails': buildingDetails,
-          });
-    }
-    if (data['screen'] == "penalties") {
-      Navigator.pushNamed(context, MySocRoutes.penalties, arguments: {
-        'userDetails': UserDetails,
-        'buildingDetails': buildingDetails,
-      });
-    }
-    if (data['screen'] == "maintainenance") {
-      Navigator.pushNamed(context, MySocRoutes.generatePDF, arguments: {
-        'userDetails': UserDetails,
-        'buildingDetails': buildingDetails,
-      });
+  void _navigateNotification(Map<String, dynamic> data) {
+    final screen = data['screen'];
+    switch (screen) {
+      case "courriers":
+        Navigator.pushNamed(context, MySocRoutes.viewRecordsCourriers,
+            arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+        break;
+      case "penalties":
+        Navigator.pushNamed(context, MySocRoutes.penalties, arguments: {
+          'userDetails': userDetails,
+          'buildingDetails': buildingDetails,
+        });
+        break;
+      case "maintenance":
+        Navigator.pushNamed(context, MySocRoutes.generatePDF, arguments: {
+          'userDetails': userDetails,
+          'buildingDetails': buildingDetails,
+        });
+        break;
     }
   }
 
   void _createNotificationChannel() async {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'inheritance_Mysoc', // Replace with your desired channel ID
-      'Har Ghar MyGhar Communist Party', // Replace with your desired channel name,
+      'inheritance_Mysoc',
+      'Har Ghar MyGhar Communist Party',
       description: 'Your channel description',
       importance: Importance.high,
       playSound: true,
@@ -221,7 +186,6 @@ class _UserHomeState extends State<UserHome> {
     platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    // Create the Android channel
     await _plugins
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -229,158 +193,311 @@ class _UserHomeState extends State<UserHome> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Material(
-                child: Column(
-                  children: [
-                    const Text("Hello you are signed in"),
-                    Text(
-                        'Welcome to the homepage ${UserDetails['firstName']}!'),
-                    ElevatedButton(
-                        onPressed: () async {
-                          // Destroying the device token after logout
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(UserDetails.id)
-                              .update({'deviceToken': ""});
-                          FirebaseAuth.instance.signOut();
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()),
-                            (route) => false,
-                          );
-                        },
-                        child: const Text("Signout")),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+          ),
+        ),
+        child: SafeArea(
+          child: isLoading
+              ? Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE94560)))
+              : AnimationLimiter(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: AnimationConfiguration.toStaggeredList(
+                        duration: const Duration(milliseconds: 600),
+                        childAnimationBuilder: (widget) => SlideAnimation(
+                          verticalOffset: 50.0,
+                          child: FadeInAnimation(child: widget),
+                        ),
+                        children: [
+                          _buildWelcomeText(),
+                          const SizedBox(height: 30),
+                          _buildFeatureGrid(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
 
-                    // For testing adding secretary dashboard. In real case we need to only display this option for isSecretary fields == true people
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, MySocRoutes.secDashboardUsers,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Secretary Dashboard")),
+  Widget _buildWelcomeText() {
+    return AnimatedTextKit(
+      animatedTexts: [
+        FadeAnimatedText(
+          'Welcome, ${userDetails['firstName']}!',
+          textStyle: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ],
+      isRepeatingAnimation: false,
+    );
+  }
 
-                    // For testing role based access allocation by secreatart. Exclusive for only secretary
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, MySocRoutes.secRoleBasedAccess,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Assign Roles and Designations!")),
+  Widget _buildFeatureGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      children: [
+        _buildGridButton(
+          label: "Sign Out",
+          icon: Icons.logout,
+          color: Color(0xFFE94560),
+          onPressed: () async {
+            try {
+              // First update the device token
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userDetails.id)
+                  .update({'deviceToken': ""});
 
-                    // For testing adding services by secretary, chairman and treasurer. Pls apply checks for designation before calling
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, MySocRoutes.addServices,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Add Services Information")),
+              // Then sign out
+              await FirebaseAuth.instance.signOut();
 
-                    // For testing adding complaints from Secretary. Pls apply checks for designation before calling
-                    // For testing adding services by secretary, chairman and treasurer. Pls apply checks for designation before calling
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, MySocRoutes.complaints,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Complaints/Suggestions")),
+              // Navigate to login page
+              if (mounted) {
+                // Check if widget is still mounted
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  (route) => false,
+                );
+              }
+            } catch (e) {
+              if (mounted) {
+                // Check if widget is still mounted
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error signing out: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
+        ),
+        _buildGridButton(
+          label: "Secretary Dashboard",
+          icon: Icons.dashboard,
+          color: Color(0xFF1E90FF),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.secDashboardUsers,
+                arguments: {
+                  'userDetails': userDetails,
+                  'buildingDetails': buildingDetails,
+                });
+          },
+        ),
+        _buildGridButton(
+          label: "Assign Roles",
+          icon: Icons.assignment_ind,
+          color: Color(0xFF32CD32),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.secRoleBasedAccess,
+                arguments: {
+                  'userDetails': userDetails,
+                  'buildingDetails': buildingDetails,
+                });
+          },
+        ),
+        _buildGridButton(
+          label: "Add Services",
+          icon: Icons.add_circle_outline,
+          color: Color(0xFFFFA500),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.addServices, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          label: "Complaints",
+          icon: Icons.feedback,
+          color: Color(0xFFFF6347),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.complaints, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          label: "Announcements",
+          icon: Icons.announcement,
+          color: Color(0xFF9370DB),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.announcements, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          label: "Penalties",
+          icon: Icons.money_off,
+          color: Color(0xFF20B2AA),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.penalties, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          label: "Watchmen",
+          icon: Icons.security,
+          color: Color(0xFF8B4513),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.viewWatchman, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          label: "Couriers",
+          icon: Icons.local_shipping,
+          color: Color(0xFF6A5ACD),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.viewRecordsCourriers,
+                arguments: {
+                  'userDetails': userDetails,
+                  'buildingDetails': buildingDetails,
+                });
+          },
+        ),
+        _buildGridButton(
+          label: "Maintenance PDF",
+          icon: Icons.picture_as_pdf,
+          color: Color(0xFFDAA520),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.viewMainatainenanceJob,
+                arguments: {
+                  'userDetails': userDetails,
+                  'buildingDetails': buildingDetails,
+                });
+          },
+        ),
+        _buildGridButton(
+          label: "Pay Maintenance",
+          icon: Icons.payment,
+          color: Color.fromARGB(255, 209, 0, 164),
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.Maintain, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.assignment,
+          color: Color(0xFF6A5ACD),
+          label: 'Permissions',
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.permissions, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.visibility,
+          color: Color(0xFF6A5ACD),
+          label: 'View Permissions',
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.viewPermissions,
+                arguments: {
+                  'userDetails': userDetails,
+                  'buildingDetails': buildingDetails,
+                });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.poll,
+          color: Color(0xFF6A5ACD),
+          label: 'Polls',
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.polls, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.create,
+          color: Color(0xFF6A5ACD),
+          label: 'Create Polls',
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.createPolls, arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.create,
+          color: Color(0xFF6A5ACD),
+          label: 'Vehicles Tracking',
+          onPressed: () {
+            Navigator.pushNamed(context, MySocRoutes.vehiclesTracking,
+                arguments: {
+                  'userDetails': userDetails,
+                  'buildingDetails': buildingDetails,
+                });
+          },
+        ),
+      ],
+    );
+  }
 
-                    // For testing we are assuming that you are previliged user with atleast treasurer, secretary and chairman perms
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, MySocRoutes.announcements,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Announcements")),
-
-                    // For testing we are assuming that you are previliged user with atleast treasurer, secretary and chairman perms for applying fines
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, MySocRoutes.penalties,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Penalties")),
-
-                    // For testing we are assuming that you are previliged user with atleast treasurer, secretary and chairman perms for creating watchman accounts
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, MySocRoutes.viewWatchman,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Handle Watchmans")),
-
-                    // This will have same implementation irrespective for any account
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, MySocRoutes.viewRecordsCourriers,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("View your Courriers")),
-
-                    // For testing we are assuming that you are previliged user with atleast treasurer
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, MySocRoutes.viewMainatainenanceJob,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("View & Generate Maintainenance PDF")),
-
-                    // For viewing one's own maintainenance records and pdfs
-                    // For testing we are assuming that you are previliged user with atleast treasurer
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, MySocRoutes.Maintain,
-                              arguments: {
-                                'userDetails': UserDetails,
-                                'buildingDetails': buildingDetails,
-                              });
-                        },
-                        child: Text("Pay Own Maintainenance")),
-                  ],
+  Widget _buildGridButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: color.withOpacity(0.8),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: Colors.white),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
+            ],
+          ),
+        ),
       ),
     );
   }

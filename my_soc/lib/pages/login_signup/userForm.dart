@@ -8,6 +8,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:my_soc/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class UserRegistrationPage extends StatefulWidget {
   const UserRegistrationPage({super.key});
@@ -52,14 +54,13 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
   late Map buildData;
 
   // Theme Variables
-  static final Color primaryColor = Colors.blue;
-  static final Color backgroundColor = Colors.blue[50]!;
+  static final Color primaryColor = Color(0xFFE94560);
+  static final Color backgroundColor = Color(0xFF1A1A2E);
 
   User? currUser;
   late Cloudinary cloudinary;
   List<String> _wingOptions = [];
   bool _loadingWings = true;
-  // For dynamic uplaod status
   double possStatus = 0.0;
   double utiStatus = 0.0;
 
@@ -80,13 +81,11 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
     );
   }
 
-  // Enhanced phone number validation
   String? validatePhoneNumber(String? value, {bool isRequired = true}) {
     if (value == null || value.isEmpty) {
       return isRequired ? 'Please enter phone number' : null;
     }
 
-    // Remove any spaces or special characters
     String cleanNumber = value.replaceAll(RegExp(r'[^0-9]'), '');
 
     if (cleanNumber.length != 10) {
@@ -106,7 +105,6 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
         _loadingWings = true;
       });
 
-      // Get the document based on buildingId
       DocumentSnapshot buildingDoc = await FirebaseFirestore.instance
           .collection('buildings')
           .doc(buildingIdController.text.trim())
@@ -158,7 +156,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
               width: 150,
               height: 150,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withOpacity(0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: primaryColor.withOpacity(0.3),
@@ -249,10 +247,10 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.blue[800],
+              color: Colors.white,
             ),
           ),
-          Divider(color: Colors.blue[800], thickness: 1),
+          Divider(color: Colors.white.withOpacity(0.3), thickness: 1),
         ],
       ),
     );
@@ -268,20 +266,20 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             padding: EdgeInsets.all(15),
             margin: EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.blue[200]!),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Row(
               children: [
-                Icon(Icons.upload_file, color: Colors.blue[700]),
+                Icon(Icons.upload_file, color: Colors.white),
                 SizedBox(width: 15),
                 Expanded(
                   child: Text(
                     title,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.blue[700],
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -295,7 +293,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             child: Text(
               'File selected: ${file.path.split('/').last}',
               style: TextStyle(
-                color: Colors.green[700],
+                color: Colors.green,
                 fontSize: 14,
               ),
             ),
@@ -306,13 +304,11 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
 
   Future<void> _storeData() async {
     try {
-      // Validate numeric inputs
       final floorNum = int.tryParse(floorNumberController.text) ?? 0;
       final familyMembers = int.tryParse(familyMembersController.text) ?? 0;
 
       bool isSec = false;
 
-      //Check if building is valid
       if (isValidBuilding == false) {
         throw Exception('Please refer to a valid building');
       }
@@ -336,7 +332,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             : null,
         'email': currUser?.email,
         'designation': isSec ? 4 : 0,
-        'flatNumber': int.tryParse(flatNumberController.text) ?? 0,
+        'flatNumber': flatNumberController.text.trim(),
         'floorNumber': int.parse(floorNumberController.text),
         'wing': wingController.text,
         'familyMembers': int.parse(familyMembersController.text),
@@ -420,9 +416,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
           folder: "inheritance_user_pdfs",
           progressCallback: (count, total) {
             setState(() {
-              print(count);
               possStatus = count / total;
-              print(possStatus);
             });
           });
       if (possDoc.isSuccessful) {
@@ -435,7 +429,6 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
           folder: "inheritance_user_pdfs",
           progressCallback: (count, total) {
             setState(() {
-              print(count);
               utiStatus = count / total;
             });
           });
@@ -472,7 +465,6 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
         setState(() {
           isValidBuilding = true;
         });
-        // Fetch wings after building is validated
         await fetchWingOptions();
       } else {
         throw Exception('Invalid Building ID');
@@ -489,528 +481,751 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(_profilePhotoURL);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "MySoc Registration",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        title: AnimatedTextKit(
+          animatedTexts: [
+            WavyAnimatedText(
+              'MySoc Registration',
+              textStyle: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+          isRepeatingAnimation: false,
         ),
-        backgroundColor: Color(0xFF1565C0), // Custom blue color
+        backgroundColor: Color(0xFF1A1A2E),
         elevation: 2,
         centerTitle: true,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [backgroundColor, Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
           ),
         ),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
+        child: SafeArea(
           child: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _buildProfilePhotoSection(),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+            child: AnimationLimiter(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 500),
+                      childAnimationBuilder: (widget) => SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(child: widget),
+                      ),
                       children: [
+                        _buildProfilePhotoSection(),
                         Center(
-                          child: ElevatedButton(
-                              onPressed: uploadProfilePhoto,
-                              child: Text("Upload Photo")),
-                        ),
-                        if (_profilePhotoURL != null) Icon(Icons.done),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-
-                  TextFormField(
-                    enabled: isValidBuilding ? false : true,
-                    controller: buildingIdController,
-                    decoration: InputDecoration(
-                      labelText: "Building ID",
-                      prefixIcon: Icon(Icons.apartment),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter building ID';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  ElevatedButton(
-                      onPressed: validateBuilding,
-                      child: Text("Validate Building")),
-
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: firstNameController,
-                    decoration: InputDecoration(
-                      labelText: "First Name",
-                      prefixIcon: Icon(Icons.person),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: lastNameController,
-                    decoration: InputDecoration(
-                      labelText: "Last Name",
-                      prefixIcon: Icon(Icons.person_outline),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your last name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 10,
-                    decoration: InputDecoration(
-                      labelText: "Phone Number",
-                      prefixIcon: Icon(Icons.phone),
-                      helperText: 'Enter 10-digit mobile number',
-                      counterText: "", // Hides the built-in counter
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      if (value.length != 10) {
-                        return 'Phone number must be 10 digits';
-                      }
-                      if (!RegExp(r'^[6-9][0-9]{9}$').hasMatch(value)) {
-                        return 'Please enter a valid Indian mobile number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  // Alternative phone number (optional)
-                  TextFormField(
-                    controller: otherPhoneController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 10,
-                    decoration: InputDecoration(
-                      labelText: "Alternative Phone Number (Optional)",
-                      prefixIcon: Icon(Icons.phone_android),
-                      helperText: 'Enter 10-digit mobile number',
-                      counterText: "", // Hides the built-in counter
-                    ),
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty) {
-                        if (value.length != 10) {
-                          return 'Phone number must be 10 digits';
-                        }
-                        if (!RegExp(r'^[6-9][0-9]{9}$').hasMatch(value)) {
-                          return 'Please enter a valid Indian mobile number';
-                        }
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Card(
-                    elevation: 2,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Currently Residing:',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Row(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Radio<bool>(
-                                value: true,
-                                groupValue: _currentlyResiding,
-                                activeColor: Colors.blue,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    _currentlyResiding = value!;
-                                  });
-                                },
+                              ElevatedButton(
+                                onPressed: uploadProfilePhoto,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
+                                ),
+                                child: Text("Upload Photo"),
                               ),
-                              Text('Yes'),
-                              SizedBox(width: 20),
-                              Radio<bool>(
-                                value: false,
-                                groupValue: _currentlyResiding,
-                                activeColor: Colors.blue,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    _currentlyResiding = value!;
-                                  });
-                                },
-                              ),
-                              Text('No'),
+                              if (_profilePhotoURL != null)
+                                Icon(Icons.done, color: Colors.white),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  _buildSectionHeader('Residence Details'),
-
-                  TextFormField(
-                    controller: flatNumberController,
-                    decoration: InputDecoration(
-                      labelText: "Flat Number",
-                      prefixIcon: Icon(Icons.home),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter flat number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: floorNumberController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Floor Number",
-                      prefixIcon: Icon(Icons.stairs),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter floor number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  DropdownButtonFormField<String>(
-                    value: wingController.text.isEmpty
-                        ? null
-                        : wingController.text,
-                    decoration: InputDecoration(
-                      labelText: "Wing",
-                      prefixIcon: Icon(Icons.business),
-                    ),
-                    items: _loadingWings
-                        ? [
-                            DropdownMenuItem(
-                                value: null, child: Text("Loading..."))
-                          ]
-                        : _wingOptions.map((String wing) {
-                            return DropdownMenuItem(
-                              value: wing,
-                              child: Text(wing),
-                            );
-                          }).toList(),
-                    onChanged: isValidBuilding
-                        ? (String? newValue) {
-                            setState(() {
-                              wingController.text = newValue ?? '';
-                            });
-                          }
-                        : null,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select a wing';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: secondaryAddressController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: "Secondary Address (Optional)",
-                      prefixIcon: Icon(Icons.location_on_outlined),
-                      alignLabelWithHint: true,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: familyMembersController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Number of Family Members",
-                      prefixIcon: Icon(Icons.family_restroom),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the number of family members';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-
-                  TextFormField(
-                    controller: aadharController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 12,
-                    decoration: InputDecoration(
-                      labelText: "Aadhaar Number (Optional)",
-                      prefixIcon: Icon(Icons.credit_card),
-                      helperText: 'Enter 12-digit Aadhaar number',
-                      counterText: "", // Hides the built-in counter
-                    ),
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty) {
-                        if (value.length != 12) {
-                          return 'Aadhaar number must be 12 digits';
-                        }
-                        if (!RegExp(r'^[0-9]{12}$').hasMatch(value)) {
-                          return 'Please enter a valid Aadhaar number';
-                        }
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  _buildSectionHeader('Owner Documents'),
-
-                  _buildFileUploadButton(
-                    'Upload Possession Certificate (PDF)',
-                    _possessionCertificate,
-                    () => _pickFile('possession'),
-                  ),
-                  if (possStatus != 0)
-                    LinearProgressIndicator(
-                      value: possStatus,
-                    ),
-                  SizedBox(height: 10),
-
-                  _buildFileUploadButton(
-                    'Upload Utility Bill (PDF)',
-                    _utilityBill,
-                    () => _pickFile('utility'),
-                  ),
-                  if (utiStatus != 0)
-                    LinearProgressIndicator(
-                      value: utiStatus,
-                    ),
-
-                  SizedBox(height: 20),
-
-                  ElevatedButton(
-                      onPressed: uploadUserDocs,
-                      child: Text("Upload Documents")),
-
-                  SizedBox(height: 20),
-
-                  _buildSectionHeader('Vehicle Information'),
-
-                  SwitchListTile(
-                    title: Text('Do you have a vehicle?'),
-                    value: _hasVehicle,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _hasVehicle = value;
-                        if (!value) {
-                          _vehicles.clear();
-                          _vehicleCount = 0;
-                        }
-                      });
-                    },
-                    activeColor: Colors.blue,
-                  ),
-
-                  if (_hasVehicle && _vehicleCount < 3) ...[
-                    Card(
-                      elevation: 2,
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DropdownButtonFormField<String>(
-                              value: _selectedVehicleType,
-                              decoration: InputDecoration(
-                                labelText: 'Vehicle Type',
-                                border: OutlineInputBorder(),
-                              ),
-                              items: ['Car', 'Scooter', 'Bicycle']
-                                  .map((type) => DropdownMenuItem(
-                                        value: type,
-                                        child: Text(type),
-                                      ))
-                                  .toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedVehicleType = value;
-                                });
-                              },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          enabled: isValidBuilding ? false : true,
+                          controller: buildingIdController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Building ID",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.apartment,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
                             ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              controller: vehicleNumberController,
-                              decoration: InputDecoration(
-                                labelText: 'Vehicle Number',
-                                border: OutlineInputBorder(),
-                              ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
                             ),
-                            SizedBox(height: 16),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                if (vehicleNumberController.text.isNotEmpty &&
-                                    _selectedVehicleType != null) {
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter building ID';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: validateBuilding,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                          ),
+                          child: Text("Validate Building"),
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: firstNameController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "First Name",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.person,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: lastNameController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Last Name",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.person_outline,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.number,
+                          maxLength: 10,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Phone Number",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.phone,
+                                color: Colors.white.withOpacity(0.7)),
+                            helperText: 'Enter 10-digit mobile number',
+                            counterText: "",
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            if (value.length != 10) {
+                              return 'Phone number must be 10 digits';
+                            }
+                            if (!RegExp(r'^[6-9][0-9]{9}$').hasMatch(value)) {
+                              return 'Please enter a valid Indian mobile number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: otherPhoneController,
+                          keyboardType: TextInputType.number,
+                          maxLength: 10,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Alternative Phone Number (Optional)",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.phone_android,
+                                color: Colors.white.withOpacity(0.7)),
+                            helperText: 'Enter 10-digit mobile number',
+                            counterText: "",
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value != null && value.isNotEmpty) {
+                              if (value.length != 10) {
+                                return 'Phone number must be 10 digits';
+                              }
+                              if (!RegExp(r'^[6-9][0-9]{9}$').hasMatch(value)) {
+                                return 'Please enter a valid Indian mobile number';
+                              }
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Card(
+                          elevation: 2,
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          color: Colors.white.withOpacity(0.1),
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Currently Residing:',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Radio<bool>(
+                                      value: true,
+                                      groupValue: _currentlyResiding,
+                                      activeColor: primaryColor,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          _currentlyResiding = value!;
+                                        });
+                                      },
+                                    ),
+                                    Text('Yes',
+                                        style: TextStyle(color: Colors.white)),
+                                    SizedBox(width: 20),
+                                    Radio<bool>(
+                                      value: false,
+                                      groupValue: _currentlyResiding,
+                                      activeColor: primaryColor,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          _currentlyResiding = value!;
+                                        });
+                                      },
+                                    ),
+                                    Text('No',
+                                        style: TextStyle(color: Colors.white)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        _buildSectionHeader('Residence Details'),
+                        TextFormField(
+                          controller: flatNumberController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Flat Number",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.home,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter flat number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: floorNumberController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Floor Number",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.stairs,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter floor number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: wingController.text.isEmpty
+                              ? null
+                              : wingController.text,
+                          dropdownColor: Color(0xFF1A1A2E),
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Wing",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.business,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          items: _loadingWings
+                              ? [
+                                  DropdownMenuItem(
+                                      value: null,
+                                      child: Text("Loading...",
+                                          style:
+                                              TextStyle(color: Colors.white)))
+                                ]
+                              : _wingOptions.map((String wing) {
+                                  return DropdownMenuItem(
+                                    value: wing,
+                                    child: Text(wing,
+                                        style: TextStyle(color: Colors.white)),
+                                  );
+                                }).toList(),
+                          onChanged: isValidBuilding
+                              ? (String? newValue) {
                                   setState(() {
-                                    _vehicles.add({
-                                      'type': _selectedVehicleType!,
-                                      'number': vehicleNumberController.text,
-                                    });
-                                    vehicleNumberController.clear();
-                                    _selectedVehicleType = null;
-                                    _vehicleCount++;
+                                    wingController.text = newValue ?? '';
                                   });
-                                } else {
+                                }
+                              : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a wing';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: secondaryAddressController,
+                          maxLines: 3,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Secondary Address (Optional)",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.location_on_outlined,
+                                color: Colors.white.withOpacity(0.7)),
+                            alignLabelWithHint: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: familyMembersController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Number of Family Members",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.family_restroom,
+                                color: Colors.white.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the number of family members';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: aadharController,
+                          keyboardType: TextInputType.number,
+                          maxLength: 12,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Aadhaar Number (Optional)",
+                            labelStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.credit_card,
+                                color: Colors.white.withOpacity(0.7)),
+                            helperText: 'Enter 12-digit Aadhaar number',
+                            counterText: "",
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value != null && value.isNotEmpty) {
+                              if (value.length != 12) {
+                                return 'Aadhaar number must be 12 digits';
+                              }
+                              if (!RegExp(r'^[0-9]{12}$').hasMatch(value)) {
+                                return 'Please enter a valid Aadhaar number';
+                              }
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        _buildSectionHeader('Owner Documents'),
+                        _buildFileUploadButton(
+                          'Upload Possession Certificate (PDF)',
+                          _possessionCertificate,
+                          () => _pickFile('possession'),
+                        ),
+                        if (possStatus != 0)
+                          LinearProgressIndicator(
+                            value: possStatus,
+                            backgroundColor: Colors.white.withOpacity(0.1),
+                            color: primaryColor,
+                          ),
+                        SizedBox(height: 10),
+                        _buildFileUploadButton(
+                          'Upload Utility Bill (PDF)',
+                          _utilityBill,
+                          () => _pickFile('utility'),
+                        ),
+                        if (utiStatus != 0)
+                          LinearProgressIndicator(
+                            value: utiStatus,
+                            backgroundColor: Colors.white.withOpacity(0.1),
+                            color: primaryColor,
+                          ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: uploadUserDocs,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                          ),
+                          child: Text("Upload Documents"),
+                        ),
+                        SizedBox(height: 20),
+                        _buildSectionHeader('Vehicle Information'),
+                        SwitchListTile(
+                          title: Text('Do you have a vehicle?',
+                              style: TextStyle(color: Colors.white)),
+                          value: _hasVehicle,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _hasVehicle = value;
+                              if (!value) {
+                                _vehicles.clear();
+                                _vehicleCount = 0;
+                              }
+                            });
+                          },
+                          activeColor: primaryColor,
+                        ),
+                        if (_hasVehicle && _vehicleCount < 3) ...[
+                          Card(
+                            elevation: 2,
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            color: Colors.white.withOpacity(0.1),
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  DropdownButtonFormField<String>(
+                                    value: _selectedVehicleType,
+                                    dropdownColor: Color(0xFF1A1A2E),
+                                    style: TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      labelText: 'Vehicle Type',
+                                      labelStyle: TextStyle(
+                                          color: Colors.white.withOpacity(0.7)),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                            color:
+                                                Colors.white.withOpacity(0.3)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                            color:
+                                                Colors.white.withOpacity(0.3)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                            color: primaryColor, width: 2),
+                                      ),
+                                    ),
+                                    items: ['Car', 'Scooter', 'Bicycle']
+                                        .map((type) => DropdownMenuItem(
+                                              value: type,
+                                              child: Text(type,
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
+                                            ))
+                                        .toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedVehicleType = value;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(height: 16),
+                                  TextFormField(
+                                    controller: vehicleNumberController,
+                                    style: TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      labelText: 'Vehicle Number',
+                                      labelStyle: TextStyle(
+                                          color: Colors.white.withOpacity(0.7)),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                            color:
+                                                Colors.white.withOpacity(0.3)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                            color:
+                                                Colors.white.withOpacity(0.3)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                            color: primaryColor, width: 2),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      if (vehicleNumberController
+                                              .text.isNotEmpty &&
+                                          _selectedVehicleType != null) {
+                                        setState(() {
+                                          _vehicles.add({
+                                            'type': _selectedVehicleType!,
+                                            'number':
+                                                vehicleNumberController.text,
+                                          });
+                                          vehicleNumberController.clear();
+                                          _selectedVehicleType = null;
+                                          _vehicleCount++;
+                                        });
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                'Please fill in all vehicle details'),
+                                            backgroundColor: Colors.orange,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: Icon(Icons.add),
+                                    label: Text('Add Vehicle'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: primaryColor,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (_vehicles.isNotEmpty) ...[
+                          SizedBox(height: 16),
+                          Text(
+                            'Added Vehicles',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: _vehicles.length,
+                            itemBuilder: (context, index) {
+                              final vehicle = _vehicles[index];
+                              return Card(
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                color: Colors.white.withOpacity(0.1),
+                                child: ListTile(
+                                  leading: Icon(
+                                    vehicle['type'] == 'Car'
+                                        ? Icons.directions_car
+                                        : vehicle['type'] == 'Scooter'
+                                            ? Icons.two_wheeler
+                                            : Icons.pedal_bike,
+                                    color: primaryColor,
+                                  ),
+                                  title: Text('${vehicle['type']}',
+                                      style: TextStyle(color: Colors.white)),
+                                  subtitle: Text('${vehicle['number']}',
+                                      style: TextStyle(
+                                          color:
+                                              Colors.white.withOpacity(0.7))),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      setState(() {
+                                        _vehicles.removeAt(index);
+                                        _vehicleCount--;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                        SizedBox(height: 32),
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                if (_possessionCertificateURL == null ||
+                                    _utilityBillURL == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'Please fill in all vehicle details'),
+                                          'Please upload all required documents'),
                                       backgroundColor: Colors.orange,
                                     ),
                                   );
+                                  return;
                                 }
-                              },
-                              icon: Icon(Icons.add),
-                              label: Text('Add Vehicle'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 12),
+                                _storeData();
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-
-                  // Display added vehicles
-                  if (_vehicles.isNotEmpty) ...[
-                    SizedBox(height: 16),
-                    Text(
-                      'Added Vehicles',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue[800],
-                      ),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: _vehicles.length,
-                      itemBuilder: (context, index) {
-                        final vehicle = _vehicles[index];
-                        return Card(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          child: ListTile(
-                            leading: Icon(
-                              vehicle['type'] == 'Car'
-                                  ? Icons.directions_car
-                                  : vehicle['type'] == 'Scooter'
-                                      ? Icons.two_wheeler
-                                      : Icons.pedal_bike,
-                              color: Colors.blue,
-                            ),
-                            title: Text('${vehicle['type']}'),
-                            subtitle: Text('${vehicle['number']}'),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                setState(() {
-                                  _vehicles.removeAt(index);
-                                  _vehicleCount--;
-                                });
-                              },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              child: Text(
+                                'Submit Registration',
+                                style: TextStyle(fontSize: 18),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ],
-
-                  SizedBox(height: 32),
-
-                  // Submit Button
-                  Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Check if required documents are uploaded
-                          if (_possessionCertificateURL == null ||
-                              _utilityBillURL == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Please upload all required documents'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                            return;
-                          }
-                          _storeData();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
                         ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        child: Text(
-                          'Submit Registration',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
+                        SizedBox(height: 20),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
           ),

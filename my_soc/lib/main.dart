@@ -14,12 +14,17 @@ import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/pages/login_signup/chooser.dart';
 import 'package:my_soc/pages/login_signup/login.dart';
 import 'package:my_soc/pages/secretary/announcements.dart';
+import 'package:my_soc/pages/secretary/create_polls.dart';
 import 'package:my_soc/pages/secretary/create_watchman.dart';
 import 'package:my_soc/pages/secretary/generate_maintain.dart';
 import 'package:my_soc/pages/secretary/maintain.dart';
 import 'package:my_soc/pages/secretary/penalties.dart';
+import 'package:my_soc/pages/secretary/permissions_page.dart';
+import 'package:my_soc/pages/secretary/polls_page.dart';
+import 'package:my_soc/pages/secretary/vehicles_tracking.dart';
 import 'package:my_soc/pages/secretary/viewLogs.dart';
 import 'package:my_soc/pages/secretary/view_maintain.dart';
+import 'package:my_soc/pages/secretary/view_permissions.dart';
 import 'package:my_soc/pages/secretary/watchman.dart';
 import 'package:my_soc/pages/watchman/home_watch.dart';
 import 'package:my_soc/pages/watchman/login.dart';
@@ -41,7 +46,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   // Load the .env file
-  await dotenv.load(fileName: "C:/GithubRepos/MySoc/my_soc/.env");
+  await dotenv.load(fileName: "D:/Rashmi/Hackathons/MySoc/my_soc/.env");
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -83,7 +88,9 @@ class MyApp extends StatelessWidget {
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
         // initialRoute: MySocRoutes.signupRoute,
-        home: SafeArea(child: userExists ? UserHome() : LoginPage()),
+        initialRoute:
+            MySocRoutes.loginRoute, // Set the initial route to the login page
+        //home: SafeArea(child: userExists ? UserHome() : LoginPage()),
         routes: {
           MySocRoutes.signupRoute: (context) => const SignupPage(),
           MySocRoutes.loginRoute: (context) => const LoginPage(),
@@ -105,7 +112,6 @@ class MyApp extends StatelessWidget {
           MySocRoutes.adminHome: (context) => AdminHome(),
           MySocRoutes.announcements: (context) => AnnouncementsPage(),
           MySocRoutes.penalties: (context) => PenaltiesPage(),
-          MySocRoutes.createWatchman: (context) => WatchmanForm(),
           MySocRoutes.viewWatchman: (context) => WatchmanPage(),
           MySocRoutes.watchmanLogin: (context) => WatchmanLogin(),
           MySocRoutes.watchmanHome: (context) => WatchmanHome(),
@@ -116,8 +122,15 @@ class MyApp extends StatelessWidget {
           MySocRoutes.generatePDF: (context) => CreateMaintain(),
           MySocRoutes.viewMainatainenanceJob: (context) =>
               ViewMainatainenanceJob(),
-          MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
-          MySocRoutes.Maintain: (context) => Maintain(),
+          //MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
+          MySocRoutes.permissions: (context) => PermissionsPage(),
+          MySocRoutes.viewPermissions: (context) => ViewPermissionsPage(),
+          MySocRoutes.polls: (context) => ViewPollsPage(),
+          MySocRoutes.vehiclesTracking: (context) => VehicleTrackingPage(),
+          MySocRoutes.viewMainatainenanceJob: (context) =>
+              ViewMainatainenanceJob(),
+          //MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
+          //MySocRoutes.Maintain: (context) => Maintain(),
         });
   }
 }
