@@ -164,6 +164,7 @@ class _AddServicesState extends State<AddServices> {
                       return DisplayServices(
                         building_data: snapshot.data!,
                         selectedFilter: selectedFilter,
+                        user_details: user_details,
                       );
                     } else {
                       return const Center(
@@ -185,10 +186,12 @@ class _AddServicesState extends State<AddServices> {
 
 class DisplayServices extends StatefulWidget {
   final building_data;
+  final user_details;
   final String selectedFilter;
   const DisplayServices({
     super.key,
     this.building_data,
+    this.user_details,
     required this.selectedFilter,
   });
 
@@ -285,21 +288,22 @@ class _DisplayServicesState extends State<DisplayServices> {
                   ),
                 ),
         ),
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              addServicesPopup(context, widget.building_data);
-            },
-            backgroundColor: const Color(0xFFE94560),
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
-              "Add Service",
-              style: TextStyle(color: Colors.white),
+        if (widget.user_details['designation'] == 4)
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                addServicesPopup(context, widget.building_data);
+              },
+              backgroundColor: const Color(0xFFE94560),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                "Add Service",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
-        ),
       ],
     );
   }

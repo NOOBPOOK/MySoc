@@ -24,7 +24,7 @@ class _AdminHomeState extends State<AdminHome> {
         child: SafeArea(
           child: AnimationLimiter(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(25.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: AnimationConfiguration.toStaggeredList(
@@ -90,26 +90,29 @@ class _AdminHomeState extends State<AdminHome> {
                       ],
                     ),
                     const Spacer(),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                            context, MySocRoutes.loginRoute);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE94560),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(
+                              context, MySocRoutes.loginRoute);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE94560),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 8,
+                          shadowColor: const Color(0xFFE94560).withOpacity(0.5),
                         ),
-                        elevation: 8,
-                        shadowColor: const Color(0xFFE94560).withOpacity(0.5),
-                      ),
-                      child: const Text(
-                        "Logout",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        child: const Text(
+                          "Logout",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

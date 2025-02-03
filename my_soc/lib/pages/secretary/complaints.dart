@@ -6,123 +6,66 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_soc/routes.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:intl/intl.dart';
 
 class ComplaintsPage extends StatefulWidget {
   @override
   _ComplaintsPageState createState() => _ComplaintsPageState();
 }
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(80.0),
-          child: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            backgroundColor: const Color(0xFF1A1A2E),
-            elevation: 0,
-            flexibleSpace: Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.campaign_rounded,
-                        color: Color(0xFFE94560),
-                        size: 32,
-                      ),
-                      const SizedBox(width: 12),
-                      AnimatedTextKit(
-                        animatedTexts: [
-                          TypewriterAnimatedText(
-                            'Complaints',
-                            textStyle: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            speed: const Duration(milliseconds: 100),
-                          ),
-                        ],
-                        isRepeatingAnimation: false,
-                        totalRepeatCount: 1,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 3,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFE94560), Color(0xFF0F3460)],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+
+@override
+Widget build(BuildContext context) {
+  return SafeArea(
+    child: Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80.0),
+        child: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
           ),
-        ),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-            ),
-          ),
-          child: SafeArea(
-            child: Stack(
+          backgroundColor: const Color(0xFF1A1A2E),
+          elevation: 0,
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Your list of complaints and other widgets go here
-                        // Example:
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: 10, // Replace with your actual item count
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: ListTile(
-                                title: Text('Complaint $index'),
-                                subtitle: Text('Details of complaint $index'),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Your other widgets go here
-                          ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.campaign_rounded,
+                      color: Color(0xFFE94560),
+                      size: 32,
+                    ),
+                    const SizedBox(width: 12),
+                    AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText(
+                          'Complaints',
+                          textStyle: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          speed: const Duration(milliseconds: 100),
                         ),
                       ],
+                      isRepeatingAnimation: false,
+                      totalRepeatCount: 1,
                     ),
-                  ),
+                  ],
                 ),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      // Add your onPressed code here
-                    },
-                    child: Icon(Icons.add),
-                    backgroundColor: Color(0xFFE94560),
+                const SizedBox(height: 8),
+                Container(
+                  height: 3,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFE94560), Color(0xFF0F3460)],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ],
@@ -130,8 +73,67 @@ class ComplaintsPage extends StatefulWidget {
           ),
         ),
       ),
-    );
-  }
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Your list of complaints and other widgets go here
+                      // Example:
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: 10, // Replace with your actual item count
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text('Complaint $index'),
+                              subtitle: Text('Details of complaint $index'),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Your other widgets go here
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    // Add your onPressed code here
+                  },
+                  child: Icon(Icons.add),
+                  backgroundColor: Color(0xFFE94560),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class _ComplaintsPageState extends State<ComplaintsPage> {
   late Map args;
@@ -200,11 +202,12 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
                       0,
                       const Color(0xFF4ECDC4),
                     ),
-                    _buildTabButton(
-                      'Shared\nwith you',
-                      1,
-                      const Color(0xFFFFBE0B),
-                    ),
+                    if (user_details['designation'] == 4)
+                      _buildTabButton(
+                        'Shared\nwith you',
+                        1,
+                        const Color(0xFFFFBE0B),
+                      ),
                     _buildTabButton(
                       'Your\nComplaints',
                       2,
@@ -224,10 +227,11 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
                       user_detials: user_details,
                       build_details: build_details,
                     ),
-                    sharedWithYou(
-                      user_detials: user_details,
-                      build_details: build_details,
-                    ),
+                    if (user_details['designation'] == 4)
+                      sharedWithYou(
+                        user_detials: user_details,
+                        build_details: build_details,
+                      ),
                     yourComplaints(
                       user_detials: user_details,
                       build_details: build_details,
@@ -318,6 +322,7 @@ class _publicComplaintsState extends State<publicComplaints> {
             return DisplayPublicComplaints(
               buildId: widget.build_details.id,
               userId: widget.user_detials.id,
+              user: widget.user_detials,
               complaints: snapshot.data!.docs,
             );
           } else {
@@ -351,6 +356,7 @@ class _sharedWithYouState extends State<sharedWithYou> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.user_detials);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
@@ -372,9 +378,11 @@ class _sharedWithYouState extends State<sharedWithYou> {
             );
           }
           if (snapshot.hasData) {
+            print(widget.user_detials);
             return DisplayPublicComplaints(
               buildId: widget.build_details.id,
               userId: widget.user_detials.id,
+              user: widget.user_detials,
               complaints: snapshot.data!.docs,
             );
           } else {
@@ -389,9 +397,14 @@ class _sharedWithYouState extends State<sharedWithYou> {
 class DisplayPublicComplaints extends StatefulWidget {
   final complaints;
   final userId;
+  final user;
   final buildId;
   const DisplayPublicComplaints(
-      {super.key, required this.complaints, this.userId, this.buildId});
+      {super.key,
+      required this.complaints,
+      this.userId,
+      this.user,
+      this.buildId});
 
   @override
   State<DisplayPublicComplaints> createState() =>
@@ -476,6 +489,10 @@ class _DisplayPublicComplaintsState extends State<DisplayPublicComplaints> {
       itemBuilder: (context, index) {
         final complaint = widget.complaints[index];
         final bool statusEnabled = complaint['status'] < 3;
+        print(widget.user);
+        print(widget.userId);
+        DateTime addedAt = complaint['addedAt'].toDate();
+        String formattedDate = DateFormat('dd MMM, yyyy').format(addedAt);
 
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
@@ -689,26 +706,27 @@ class _DisplayPublicComplaintsState extends State<DisplayPublicComplaints> {
                         ),
                       ],
                     ),
-                    if (statusEnabled)
-                      TextButton(
-                        onPressed: () => updateStatus(docId: complaint.id),
-                        style: TextButton.styleFrom(
-                          backgroundColor: statusUI[complaint['status']]
-                                  ['color']
-                              .withOpacity(0.2),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                    if (widget.user['designation'] == 4)
+                      if (statusEnabled)
+                        TextButton(
+                          onPressed: () => updateStatus(docId: complaint.id),
+                          style: TextButton.styleFrom(
+                            backgroundColor: statusUI[complaint['status']]
+                                    ['color']
+                                .withOpacity(0.2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Update Status',
+                            style: TextStyle(
+                              color: statusUI[complaint['status']]['color'],
+                            ),
                           ),
                         ),
-                        child: Text(
-                          'Update Status',
-                          style: TextStyle(
-                            color: statusUI[complaint['status']]['color'],
-                          ),
-                        ),
-                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -716,7 +734,7 @@ class _DisplayPublicComplaintsState extends State<DisplayPublicComplaints> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Added on ${complaint['addedAt']}",
+                      "Added on $formattedDate",
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.5),
                         fontSize: 12,
@@ -806,6 +824,7 @@ class _yourComplaintsState extends State<yourComplaints> {
                 return DisplayPublicComplaints(
                   buildId: widget.build_details.id,
                   userId: widget.user_detials.id,
+                  user: widget.user_detials,
                   complaints: snapshot.data!.docs,
                 );
               } else {

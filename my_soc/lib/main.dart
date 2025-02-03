@@ -46,7 +46,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   // Load the .env file
-  await dotenv.load(fileName: "D:/Rashmi/Hackathons/MySoc/my_soc/.env");
+  await dotenv.load(fileName: "C:/GithubRepos/MySoc/my_soc/.env");
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
         // initialRoute: MySocRoutes.signupRoute,
         initialRoute:
             MySocRoutes.loginRoute, // Set the initial route to the login page
-        //home: SafeArea(child: userExists ? UserHome() : LoginPage()),
+        home: SafeArea(child: userExists ? UserHome() : LoginPage()),
         routes: {
           MySocRoutes.signupRoute: (context) => const SignupPage(),
           MySocRoutes.loginRoute: (context) => const LoginPage(),
@@ -129,8 +129,8 @@ class MyApp extends StatelessWidget {
           MySocRoutes.vehiclesTracking: (context) => VehicleTrackingPage(),
           MySocRoutes.viewMainatainenanceJob: (context) =>
               ViewMainatainenanceJob(),
-          //MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
-          //MySocRoutes.Maintain: (context) => Maintain(),
+          MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
+          MySocRoutes.Maintain: (context) => Maintain(),
         });
   }
 }

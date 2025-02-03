@@ -26,8 +26,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                 if (desc.contains('penalties')) {
                   type = 'penalties';
                 }
-                if (desc.contains('maintainenance')) {
-                  type = 'maintainenance';
+                if (desc.contains('Maintainence')) {
+                  type = 'maintainenace';
                 }
 
                 DocumentSnapshot result = await FirebaseFirestore.instance
@@ -36,6 +36,7 @@ class _AdminPaymentsState extends State<AdminPayments> {
                     .collection(type)
                     .doc(doc_id)
                     .get();
+
                 data['data'] = result.data() as Map;
                 isLoading = false;
                 setDialogState(() {});
@@ -90,7 +91,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                             else
                               ...data['data'].entries.map((entry) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(12),
@@ -99,7 +101,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Flexible(
                                           flex: 2,
@@ -252,8 +255,9 @@ class _AdminPaymentsState extends State<AdminPayments> {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           var payment = snapshot.data!.docs[index];
-                          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-                              payment['time'] * 1000);
+                          DateTime dateTime =
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  payment['time'] * 1000);
                           String formattedDate =
                               DateFormat('dd MMM yyyy, HH:mm').format(dateTime);
 
@@ -277,7 +281,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(20),
-                                      onTap: () => _showExtraInfo(context, payment),
+                                      onTap: () =>
+                                          _showExtraInfo(context, payment),
                                       child: Padding(
                                         padding: const EdgeInsets.all(20),
                                         child: Column(
@@ -286,7 +291,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Text(
                                                   '₹${(payment['amount'] / 100).toStringAsFixed(2)}',
@@ -302,16 +308,19 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                                       horizontal: 12,
                                                       vertical: 6),
                                                   decoration: BoxDecoration(
-                                                    color: const Color(0xFFE94560)
-                                                        .withOpacity(0.2),
+                                                    color:
+                                                        const Color(0xFFE94560)
+                                                            .withOpacity(0.2),
                                                     borderRadius:
-                                                        BorderRadius.circular(20),
+                                                        BorderRadius.circular(
+                                                            20),
                                                   ),
                                                   child: Text(
                                                     payment['method'],
                                                     style: const TextStyle(
                                                       color: Color(0xFFE94560),
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
@@ -321,8 +330,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                             Text(
                                               payment['description'],
                                               style: TextStyle(
-                                                color:
-                                                    Colors.white.withOpacity(0.9),
+                                                color: Colors.white
+                                                    .withOpacity(0.9),
                                                 fontSize: 16,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -331,7 +340,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                             const SizedBox(height: 12),
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Flexible(
                                                   child: Text(
@@ -356,7 +366,8 @@ class _AdminPaymentsState extends State<AdminPayments> {
                                             const SizedBox(height: 8),
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Expanded(
                                                   child: Text(

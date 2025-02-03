@@ -97,99 +97,101 @@ Building Management Team
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-            ),
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
           ),
-          child: Column(
-            children: [
-              // Custom header similar to announcements.dart
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.assignment, // Use an appropriate icon for permissions
-                          color: Color(0xFFE94560),
-                          size: 32,
-                        ),
-                        SizedBox(width: 12),
-                        AnimatedTextKit(
-                          animatedTexts: [
-                            TypewriterAnimatedText(
-                              'View Permissions',
-                              textStyle: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+        ),
+        child: SafeArea(
+          child: DefaultTabController(
+            length: 3,
+            child: Column(
+              children: [
+                // Custom header similar to announcements.dart
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons
+                                .assignment, // Use an appropriate icon for permissions
+                            color: Color(0xFFE94560),
+                            size: 32,
+                          ),
+                          SizedBox(width: 12),
+                          AnimatedTextKit(
+                            animatedTexts: [
+                              TypewriterAnimatedText(
+                                'View Permissions',
+                                textStyle: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                speed: const Duration(milliseconds: 100),
                               ),
-                              speed: const Duration(milliseconds: 100),
-                            ),
-                          ],
-                          isRepeatingAnimation: false,
-                          totalRepeatCount: 1,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Container(
-                      height: 3,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFE94560), Color(0xFF0F3460)],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
+                            ],
+                            isRepeatingAnimation: false,
+                            totalRepeatCount: 1,
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 8),
+                      Container(
+                        height: 3,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFE94560), Color(0xFF0F3460)],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // TabBar and TabBarView
-              Expanded(
-                child: Column(
-                  children: [
-                    TabBar(
-                      indicatorColor: Color(0xFFE94560),
-                      tabs: [
-                        Tab(text: 'Pending'),
-                        Tab(text: 'Approved'),
-                        Tab(text: 'Rejected'),
-                      ],
-                    ),
-                    Expanded(
-                      child: isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                  color: Color(0xFFE94560)))
-                          : TabBarView(
-                              children: [
-                                _buildRequestsList('pending'),
-                                _buildRequestsList('approved'),
-                                _buildRequestsList('rejected'),
-                              ],
-                            ),
-                    ),
-                  ],
+                // TabBar and TabBarView
+                Expanded(
+                  child: Column(
+                    children: [
+                      TabBar(
+                        indicatorColor: Color(0xFFE94560),
+                        tabs: [
+                          Tab(text: 'Pending'),
+                          Tab(text: 'Approved'),
+                          Tab(text: 'Rejected'),
+                        ],
+                      ),
+                      Expanded(
+                        child: isLoading
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                    color: Color(0xFFE94560)))
+                            : TabBarView(
+                                children: [
+                                  _buildRequestsList('pending'),
+                                  _buildRequestsList('approved'),
+                                  _buildRequestsList('rejected'),
+                                ],
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-
 
   Widget _buildRequestsList(String status) {
     return StreamBuilder<QuerySnapshot>(

@@ -130,7 +130,8 @@ class _PenaltiesPageState extends State<PenaltiesPage> {
     }
   }
 
-  void _handlePenaltiesPayments({required QueryDocumentSnapshot penalty_info}) async {
+  void _handlePenaltiesPayments(
+      {required QueryDocumentSnapshot penalty_info}) async {
     DateTime dateTime = DateTime.parse(penalty_info['dueDate']);
     Timestamp timestamp1 = Timestamp.fromDate(dateTime);
     Timestamp currentTime = Timestamp.now();
@@ -394,7 +395,8 @@ class _PenaltiesPageState extends State<PenaltiesPage> {
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: () => _showImageDialog(context, penalty['proofImage']),
+                      onTap: () =>
+                          _showImageDialog(context, penalty['proofImage']),
                       child: Container(
                         height: 200,
                         decoration: BoxDecoration(
@@ -412,7 +414,8 @@ class _PenaltiesPageState extends State<PenaltiesPage> {
                               if (loadingProgress == null) return child;
                               return Center(
                                 child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
                                       ? loadingProgress.cumulativeBytesLoaded /
                                           loadingProgress.expectedTotalBytes!
                                       : null,
@@ -462,96 +465,105 @@ class _PenaltiesPageState extends State<PenaltiesPage> {
     build_details = args['buildingDetails'];
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('buildings')
-                      .doc(build_details.id)
-                      .collection('penalties')
-                      .orderBy('createdAt', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error loading penalties',
-                          style: TextStyle(color: Colors.red[300]),
-                        ),
-                      );
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFFE94560),
-                        ),
-                      );
-                    }
-
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return _buildEmptyState();
-                    }
-
-                    return AnimationLimiter(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          var penalty = snapshot.data!.docs[index];
-                          Color cardColor = cardColors[index % cardColors.length];
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 500),
-                            child: SlideAnimation(
-                              verticalOffset: 50.0,
-                              child: FadeInAnimation(
-                                child: _buildPenaltyCard(penalty, cardColor),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddPenalty(
-                user_data: user_details,
-                build_data: build_details,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
               ),
             ),
-          );
-        },
-        backgroundColor: const Color(0xFFE94560),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'Add Penalty',
-          style: TextStyle(color: Colors.white),
-        ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('buildings')
+                          .doc(build_details.id)
+                          .collection('penalties')
+                          .orderBy('createdAt', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error loading penalties',
+                              style: TextStyle(color: Colors.red[300]),
+                            ),
+                          );
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFFE94560),
+                            ),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return _buildEmptyState();
+                        }
+
+                        return AnimationLimiter(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              var penalty = snapshot.data!.docs[index];
+                              Color cardColor =
+                                  cardColors[index % cardColors.length];
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 500),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                    child:
+                                        _buildPenaltyCard(penalty, cardColor),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (user_details['designation'] == 4)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddPenalty(
+                            user_data: user_details,
+                            build_data: build_details,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text("Add Penalty")),
+              ),
+            )
+        ],
       ),
     );
   }

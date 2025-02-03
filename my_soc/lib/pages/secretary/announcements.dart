@@ -97,99 +97,105 @@ class AnnouncementsPage extends StatelessWidget {
     build_details = args['buildingDetails'];
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('buildings')
-                      .doc(build_details.id)
-                      .collection('announcements')
-                      .orderBy('createdAt', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return _buildErrorState('Something went wrong');
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFFE94560),
-                        ),
-                      );
-                    }
-
-                    if (snapshot.data!.docs.isEmpty) {
-                      return _buildEmptyState();
-                    }
-
-                    return AnimationLimiter(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          var doc = snapshot.data!.docs[index];
-                          Map<String, dynamic> data =
-                              doc.data() as Map<String, dynamic>;
-                          Color cardColor =
-                              cardColors[index % cardColors.length];
-
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 500),
-                            child: SlideAnimation(
-                              verticalOffset: 50.0,
-                              child: FadeInAnimation(
-                                child: _buildCompactAnnouncementCard(
-                                  context,
-                                  data,
-                                  cardColor,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddAnnouncement(
-                user_data: user_details,
-                build_data: build_details,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
               ),
             ),
-          );
-        },
-        backgroundColor: const Color(0xFFE94560),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'New Announcement',
-          style: TextStyle(color: Colors.white),
-        ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('buildings')
+                          .doc(build_details.id)
+                          .collection('announcements')
+                          .orderBy('createdAt', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return _buildErrorState('Something went wrong');
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFFE94560),
+                            ),
+                          );
+                        }
+
+                        if (snapshot.data!.docs.isEmpty) {
+                          return _buildEmptyState();
+                        }
+
+                        return AnimationLimiter(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              var doc = snapshot.data!.docs[index];
+                              Map<String, dynamic> data =
+                                  doc.data() as Map<String, dynamic>;
+                              Color cardColor =
+                                  cardColors[index % cardColors.length];
+
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 500),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                    child: _buildCompactAnnouncementCard(
+                                      context,
+                                      data,
+                                      cardColor,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (user_details['designation'] == 4)
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddAnnouncement(
+                              user_data: user_details,
+                              build_data: build_details,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text("New Announcement")),
+                )),
+        ],
       ),
     );
   }

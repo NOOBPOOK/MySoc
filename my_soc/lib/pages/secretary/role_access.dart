@@ -126,8 +126,8 @@ class _RoleAccessPageState extends State<RoleAccessPage> {
                         right: 16,
                         top: 16,
                         child: IconButton(
-                          icon:
-                              const Icon(Icons.refresh, color: Color(0xFFE94560)),
+                          icon: const Icon(Icons.refresh,
+                              color: Color(0xFFE94560)),
                           onPressed: () {
                             Navigator.of(context).pushReplacementNamed(
                               MySocRoutes.secRoleBasedAccess,
@@ -264,7 +264,7 @@ class _ChooseTableState extends State<ChooseTable> {
   Widget _buildCurrentRoles() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
@@ -387,7 +387,7 @@ class _ChooseTableState extends State<ChooseTable> {
 
   Widget _buildRoleSelector() {
     return Container(
-      height: 50,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -446,14 +446,6 @@ class _ChooseTableState extends State<ChooseTable> {
       return fullName.contains(searchQuery) || role.contains(searchQuery);
     }).toList();
 
-    // Filter out users with designation 1-3
-    filteredUsers = filteredUsers
-        .where((user) =>
-            user['designation'] != 1 &&
-            user['designation'] != 2 &&
-            user['designation'] != 3)
-        .toList();
-
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: filteredUsers.length,
@@ -487,7 +479,7 @@ class _ChooseTableState extends State<ChooseTable> {
           ),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: const EdgeInsets.all(8),
           leading: CircleAvatar(
             backgroundColor: Colors.white.withOpacity(0.2),
             child: Icon(_getRoleIcon(user['designation']), color: Colors.white),

@@ -33,6 +33,15 @@ class _ViewPollsPageState extends State<ViewPollsPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    // Initialize user provider with user data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      // Assuming you have user data available here
+      final userId = 'user_id_example'; // Replace with actual user ID
+      final userDesignation = 2; // Replace with actual user designation
+      userProvider.setUser(userId, userDesignation);
+    });
   }
 
   @override
@@ -112,10 +121,11 @@ class _ViewPollsPageState extends State<ViewPollsPage>
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: isSelected ? Colors.blue : Colors.grey[300]!,
+              color: isSelected ? const Color(0xFFE94560) : Colors.grey[300]!,
               width: isSelected ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(12),
+            color: Colors.white.withOpacity(0.1),
           ),
           child: Column(
             children: [
@@ -128,6 +138,8 @@ class _ViewPollsPageState extends State<ViewPollsPage>
                     value: totalVotes > 0 ? voteCount / totalVotes : 0,
                     backgroundColor: Colors.grey[100],
                     minHeight: 6,
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Color(0xFFE94560)),
                   ),
                 ),
               Padding(
@@ -138,13 +150,15 @@ class _ViewPollsPageState extends State<ViewPollsPage>
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: Icon(Icons.check_circle,
-                            color: Colors.blue[700], size: 20),
+                            color: const Color(0xFFE94560), size: 20),
                       ),
                     Expanded(
                       child: Text(
                         option,
                         style: TextStyle(
-                          color: isSelected ? Colors.blue[700] : Colors.black87,
+                          color: isSelected
+                              ? const Color(0xFFE94560)
+                              : Colors.white,
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
@@ -206,13 +220,14 @@ class _ViewPollsPageState extends State<ViewPollsPage>
       elevation: 4,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white.withOpacity(0.1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue[700],
+              color: const Color(0xFF1A1A2E),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -373,30 +388,42 @@ class _ViewPollsPageState extends State<ViewPollsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Polls'),
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.how_to_vote),
-              text: 'Active Polls',
-            ),
-            Tab(
-              icon: Icon(Icons.history),
-              text: 'Expired Polls',
-            ),
-          ],
+    return ChangeNotifierProvider(
+      create: (_) => UserProvider(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Polls'),
+          elevation: 0,
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(
+                icon: Icon(Icons.how_to_vote),
+                text: 'Active Polls',
+              ),
+              Tab(
+                icon: Icon(Icons.history),
+                text: 'Expired Polls',
+              ),
+            ],
+          ),
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildPollsList(false),
-          _buildPollsList(true),
-        ],
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+            ),
+          ),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildPollsList(false),
+              _buildPollsList(true),
+            ],
+          ),
+        ),
       ),
     );
   }

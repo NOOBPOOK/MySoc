@@ -104,8 +104,11 @@ Admin Team
     }
   }
 
-  Future<void> sendRejectionEmailDuplicate(String buildingName, String rejectionRemark,
-      Map<String, dynamic> buildingData, String buildingId) async {
+  Future<void> sendRejectionEmailDuplicate(
+      String buildingName,
+      String rejectionRemark,
+      Map<String, dynamic> buildingData,
+      String buildingId) async {
     String? ownerEmail = buildingData['email'];
     String adminEmail = _auth.currentUser?.email ?? 'Admin';
     String adminUsername = await getAdminUsername(adminEmail);
@@ -196,7 +199,6 @@ Admin Team
     }
   }
 
-
   String extractWingName(dynamic wingsField) {
     if (wingsField is String) {
       // If it's a single string like "A"
@@ -245,9 +247,8 @@ Admin Team
             List<String> extractedWings = [];
             if (data['wings'] is List) {
               final List<dynamic> wingsList = data['wings'];
-              extractedWings = wingsList
-                  .map((wing) => wing['wingName'].toString())
-                  .toList();
+              extractedWings =
+                  wingsList.map((wing) => wing['wingName'].toString()).toList();
             }
 
             final result = await Navigator.push(
@@ -661,7 +662,8 @@ Admin Team
               ),
               _buildToggleButtons(),
               Expanded(
-                child: showBuildings ? _buildBuildingsList() : _buildUsersList(),
+                child:
+                    showBuildings ? _buildBuildingsList() : _buildUsersList(),
               ),
             ],
           ),

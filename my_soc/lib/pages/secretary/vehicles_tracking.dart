@@ -12,6 +12,10 @@ class VehicleTrackingPage extends StatefulWidget {
 }
 
 class _VehicleTrackingPageState extends State<VehicleTrackingPage> {
+  late Map args;
+  late DocumentSnapshot build_details;
+  late QueryDocumentSnapshot user_details;
+
   final TextEditingController _searchController = TextEditingController();
   String _selectedFilterType = 'Vehicle Number';
   List<Map<String, dynamic>> _allVehicles = [];
@@ -22,7 +26,9 @@ class _VehicleTrackingPageState extends State<VehicleTrackingPage> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData();
+    });
   }
 
   Future<void> _fetchData() async {
@@ -32,26 +38,9 @@ class _VehicleTrackingPageState extends State<VehicleTrackingPage> {
         _errorMessage = null;
       });
 
-      final User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) throw Exception('No user logged in');
-
-      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.uid)
-          .get();
-
-      if (!userDoc.exists) throw Exception('User profile not found');
-
-      final userData = userDoc.data() as Map<String, dynamic>;
-      final String? buildingId = userData['buildingId'] as String?;
-
-      if (buildingId == null || buildingId.isEmpty) {
-        throw Exception('No building assigned to user');
-      }
-
       final QuerySnapshot buildingUsers = await FirebaseFirestore.instance
           .collection('users')
-          .where('buildingId', isEqualTo: buildingId)
+          .where('buildingId', isEqualTo: build_details.id)
           .get();
 
       List<Map<String, dynamic>> vehicles = [];
@@ -168,6 +157,10 @@ class _VehicleTrackingPageState extends State<VehicleTrackingPage> {
 
   @override
   Widget build(BuildContext context) {
+    args = ModalRoute.of(context)!.settings.arguments as Map;
+    user_details = args['userDetails'];
+    build_details = args['buildingDetails'];
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -250,17 +243,18 @@ class _VehicleTrackingPageState extends State<VehicleTrackingPage> {
               children: [
                 Expanded(
                   child: TextField(
+                    textAlign: TextAlign.center,
                     controller: _searchController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       hintText: 'Search vehicles...',
                       hintStyle:
-                          TextStyle(color: Colors.white.withOpacity(0.5)),
+                          TextStyle(color: Colors.black.withOpacity(0.5)),
                       border: InputBorder.none,
                       prefixIcon: const Icon(Icons.search,
-                          color: Colors.white, size: 20),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
+                          color: Colors.black, size: 20),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
                     ),
                     onChanged: _filterVehicles,
                   ),
@@ -310,7 +304,7 @@ class _VehicleTrackingPageState extends State<VehicleTrackingPage> {
         itemBuilder: (context, index) {
           final stat = vehicleCounts.entries.toList()[index];
           return Container(
-            width: 110,
+            width: 100,
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
