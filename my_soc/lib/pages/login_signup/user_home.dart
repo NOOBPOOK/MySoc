@@ -70,7 +70,10 @@ class _UserHomeState extends State<UserHome> {
         throw Exception(
             'Your account is not verified yet. We will inform you shortly.');
       }
+
+      // Only setup Notification if the user is truly a part of the app service
       _setupNotifications();
+
       setState(() => isLoading = false);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
