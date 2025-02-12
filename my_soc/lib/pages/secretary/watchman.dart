@@ -5,6 +5,8 @@ import 'package:my_soc/pages/secretary/create_watchman.dart';
 import 'package:my_soc/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class WatchmanPage extends StatefulWidget {
   const WatchmanPage({super.key});
@@ -34,48 +36,64 @@ class _WatchmanPageState extends State<WatchmanPage> {
     }
 
     return SafeArea(
-        child: Scaffold(
-      body: Stack(
-        children: [
-          StreamBuilder(
-              stream: watchmen_info(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Something went Wrong ${snapshot.error}"),
-                  );
-                }
-                if (snapshot.hasData) {
-                  return DisplayWatchmen(
-                    building_id: build_details.id,
-                    watchmen_data: snapshot.data!,
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              }),
-          Positioned(
-              right: 0,
-              bottom: 0,
-              child: ElevatedButton(
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+            ),
+          ),
+          child: Stack(
+            children: [
+              StreamBuilder(
+                stream: watchmen_info(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("Something went Wrong ${snapshot.error}"),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    return DisplayWatchmen(
+                      building_id: build_details.id,
+                      watchmen_data: snapshot.data!,
+                    );
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              ),
+              Positioned(
+                right: 20,
+                bottom: 20,
+                child: FloatingActionButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WatchmanForm(
-                                  user_data: user_details,
-                                  build_data: build_details,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WatchmanForm(
+                          user_data: user_details,
+                          build_data: build_details,
+                        ),
+                      ),
+                    );
                   },
-                  child: Icon(Icons.add)))
-        ],
+                  backgroundColor: const Color(0xFFE94560),
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -105,85 +123,131 @@ class _DisplayWatchmenState extends State<DisplayWatchmen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.watchmen_data.docs.length);
-    return ListView.builder(
+    return AnimationLimiter(
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
         itemCount: widget.watchmen_data.docs.length,
         itemBuilder: (context, index) {
           final ok = widget.watchmen_data.docs[index]['creation'].toDate();
           String doc = DateFormat('yyyy-MM-dd').format(ok);
 
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              // alignment: Alignment.topLeft,
-              height: 200,
-              width: 300,
-              color: const Color.fromARGB(255, 253, 203, 251),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 500),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF2A1B3D),
+                          const Color(0xFF44318D),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.1),
+                        width: 1,
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                            "Name : ${widget.watchmen_data.docs[index]['name']}"),
-                        Text(
-                            "Phone: ${widget.watchmen_data.docs[index]['phone']}"),
-                        Container(
-                          width: 200,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Text(
-                                "Shift Timing: ${widget.watchmen_data.docs[index]['shift']}"),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Name: ${widget.watchmen_data.docs[index]['name']}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Phone: ${widget.watchmen_data.docs[index]['phone']}",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Shift Timing: ${widget.watchmen_data.docs[index]['shift']}",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Username: ${widget.watchmen_data.docs[index]['username']}",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Account created: $doc",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Account created by: ${widget.watchmen_data.docs[index]['createdBy']}",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                            "username: ${widget.watchmen_data.docs[index]['username']}"),
-                        Text(
-                            "Phone: ${widget.watchmen_data.docs[index]['phone']}"),
-                        Text("Account created: ${doc}"),
-                        Container(
-                          width: 200,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Text(
-                                "Account created by: ${widget.watchmen_data.docs[index]['createdBy']}"),
-                          ),
+                        Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(
+                                widget.watchmen_data.docs[index]['profile'],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Switch(
+                              value: widget.watchmen_data.docs[index]
+                                      ['isDisabled']
+                                  ? false
+                                  : true,
+                              onChanged: (value) async {
+                                await updateWatchmen(
+                                  state: value,
+                                  docId: widget.watchmen_data.docs[index].id,
+                                );
+                              },
+                              activeColor: const Color(0xFFE94560),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundImage: NetworkImage(
-                              widget.watchmen_data.docs[index]['profile']),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Switch(
-                          value: widget.watchmen_data.docs[index]['isDisabled']
-                              ? false
-                              : true,
-                          onChanged: (value) async {
-                            await updateWatchmen(
-                                state: value,
-                                docId: widget.watchmen_data.docs[index].id);
-                          })
-                    ],
-                  )
-                ],
+                ),
               ),
             ),
           );
-        });
+        },
+      ),
+    );
   }
 }

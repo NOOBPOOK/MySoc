@@ -1,0 +1,2 @@
+D:/Rashmi/Hackathons/MySoc/my_soc/android/app/.cxx/Debug/4h3b4v3q/x86/CMakeFiles/edit_cache.dir
+D:/Rashmi/Hackathons/MySoc/my_soc/android/app/.cxx/Debug/4h3b4v3q/x86/CMakeFiles/rebuild_cache.dir

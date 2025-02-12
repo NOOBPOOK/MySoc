@@ -1,5 +1,3 @@
-// This is a dashboard viewed by secretary to see the list of people waiting for verification by the building's secretary
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +13,6 @@ class SecDashboardUsers extends StatefulWidget {
 class _SecDashboardUsersState extends State<SecDashboardUsers> {
   late Map<String, dynamic> args;
   late QuerySnapshot result;
-  late Map buildingData;
 
   Future fetchAllUsers() async {
     result = await FirebaseFirestore.instance
@@ -27,51 +24,82 @@ class _SecDashboardUsersState extends State<SecDashboardUsers> {
 
   @override
   Widget build(BuildContext context) {
-    // Getting user details from previous screen
     args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: Text('For ${args['buildingDetails']['buildingName']}'),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Color(0xFF1A1A2E),
+          title: Text(
+            'For ${args['buildingDetails']['buildingName']}',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+            ),
+          ),
+          child: FutureBuilder(
+            future: fetchAllUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFE94560),
+                    strokeWidth: 3,
+                  ),
+                );
+              }
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      SizedBox(height: 16),
+                      Text(
+                        "Something went wrong",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      Text(
+                        "${snapshot.error}",
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if (snapshot.hasData) {
+                List allUsers = snapshot.data!.docs;
+                return UserTile(allUserData: allUsers);
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE94560)),
+                );
+              }
+            },
+          ),
+        ),
       ),
-      body: FutureBuilder(
-          future: fetchAllUsers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text("Something went Wrong ${snapshot.error}"),
-              );
-            }
-            if (snapshot.hasData) {
-              List allUsers = snapshot.data!.docs;
-              return UserTile(
-                allUserData: allUsers,
-              );
-            } else {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          }),
-    ));
+    );
   }
 }
 
 class UserTile extends StatelessWidget {
   final List allUserData;
-  const UserTile({
-    super.key,
-    required this.allUserData,
-  });
+  const UserTile({super.key, required this.allUserData});
 
   void detailed_view(context, DocumentSnapshot user) async {
-    print(user);
     await Navigator.pushNamed(context, MySocRoutes.secDashboardUserDetails,
         arguments: {'details': user});
   }
@@ -79,21 +107,130 @@ class UserTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: allUserData.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(
-              '${allUserData[index].data()['firstName']} ${allUserData[index].data()['lastName']}'),
-          subtitle: Text(allUserData[index].data()['email']),
-          trailing: allUserData[index].data()['isVerified']
-              ? Icon(Icons.done)
-              : Icon(
-                  Icons.hourglass_empty,
-                  color: Colors.grey,
-                ),
-          onTap: () {
-            detailed_view(context, allUserData[index]);
-          },
+        final userData = allUserData[index].data();
+        return Card(
+          margin: EdgeInsets.only(bottom: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: Colors.white.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+          elevation: 2,
+          color: Colors.white.withOpacity(0.05),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => detailed_view(context, allUserData[index]),
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Color(0xFFE94560).withOpacity(0.2),
+                    child: Text(
+                      '${userData['firstName'][0]}${userData['lastName'][0]}',
+                      style: TextStyle(
+                        color: Color(0xFFE94560),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${userData['firstName']} ${userData['lastName']}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: userData['isVerified']
+                                    ? Colors.green.withOpacity(0.2)
+                                    : Colors.grey.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    userData['isVerified']
+                                        ? Icons.verified_user
+                                        : Icons.hourglass_empty,
+                                    size: 16,
+                                    color: userData['isVerified']
+                                        ? Colors.green
+                                        : Colors.grey,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    userData['isVerified']
+                                        ? 'Verified'
+                                        : 'Pending',
+                                    style: TextStyle(
+                                      color: userData['isVerified']
+                                          ? Colors.green
+                                          : Colors.grey,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          userData['email'],
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.home_outlined,
+                              size: 16,
+                              color: Colors.white60,
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              'Wing ${userData['wing']} - ${userData['flatNumber']}',
+                              style: TextStyle(
+                                color: Colors.white60,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
@@ -128,151 +265,227 @@ class _SecDashboardUserDetailsState extends State<SecDashboardUserDetails> {
     });
   }
 
+  Widget _buildSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: Color(0xFFE94560),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 12),
+        ...children,
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return isloading
-        ? CircularProgressIndicator()
+        ? Scaffold(
+            backgroundColor: Color(0xFF1A1A2E),
+            body: Center(
+              child: CircularProgressIndicator(color: Color(0xFFE94560)),
+            ),
+          )
         : SafeArea(
             child: Scaffold(
-            body: Column(
-              children: [
-                // For First Name
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [Text("First Name"), Text(args['firstName'])],
+              appBar: AppBar(
+                elevation: 0,
+                title: Text(
+                  'User Details',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                // For last name
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [Text("Last Name"), Text(args['lastName'])],
+                backgroundColor: Color(0xFF1A1A2E),
+                iconTheme: IconThemeData(color: Colors.white),
+              ),
+              body: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
                   ),
                 ),
-                // For Email Id
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [Text("Email Id"), Text(args['email'])],
-                  ),
-                ),
-                // For Contactt Number
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [Text("Phone Number"), Text(args['phone'])],
-                  ),
-                ),
-                // For Aadhar Card
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Aadhaar Card"),
-                      Text(args['aadharNumber'])
-                    ],
-                  ),
-                ),
-
-                // For Flat and fmaily Information
-                SizedBox(
-                  height: 20,
-                ),
-                // For flat number
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [Text("Flat Number"), Text(args['flatNumber'])],
-                  ),
-                ),
-                // For Floor Number
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [
-                      Text("Floor Number"),
-                      Text(args['floorNumber'].toString())
-                    ],
-                  ),
-                ),
-                // For Wing Within Building
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 10.0,
-                    children: [Text("Wing"), Text(args['wing'])],
-                  ),
-                ),
-                Expanded(
-                    child: // For vehicles information
-                        ListView.builder(
-                            itemCount: args['vehicles'].length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(args['vehicles'][index]['type']),
-                                subtitle:
-                                    Text(args['vehicles'][index]['number']),
-                              );
-                            })),
-                // Switch for approving the user
-                Expanded(
-                    child: TextField(
-                  controller: remarks,
-                  decoration: InputDecoration(
-                    labelText: "Any Remarks or Discripancies",
-                  ),
-                )),
-                Switch(
-                    value: isSwitched,
-                    onChanged: (value) async {
-                      // print(value);
-                      setState(() {
-                        isSwitched = value;
-                      });
-                      print(args['_id']);
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(arg['details'].id)
-                          .update({
-                        'isVerified': value,
-                        'verifiedBy': value
-                            ? FirebaseAuth.instance.currentUser?.email
-                            : "",
-                        'lastUpdated': FieldValue.serverTimestamp()
-                        // Also call the function which sends email out for the information
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: Duration(seconds: 3),
-                          content: value
-                              ? Text('User will be notified about his approval')
-                              : Text(
-                                  'User will be notified about his rejection'),
-                          backgroundColor: value ? Colors.green : Colors.red,
+                      _buildSection(
+                        'Personal Information',
+                        [
+                          _buildDetailRow("First Name", args['firstName']),
+                          _buildDetailRow("Last Name", args['lastName']),
+                          _buildDetailRow("Email", args['email']),
+                          _buildDetailRow("Phone", args['phone']),
+                          _buildDetailRow("Aadhaar", args['aadharNumber']),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      _buildSection(
+                        'Residence Details',
+                        [
+                          _buildDetailRow("Wing", args['wing']),
+                          _buildDetailRow(
+                              "Floor", args['floorNumber'].toString()),
+                          _buildDetailRow("Flat", args['flatNumber']),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      _buildSection(
+                        'Vehicles',
+                        args['vehicles'].map<Widget>((vehicle) {
+                          return Card(
+                            color: Colors.white.withOpacity(0.05),
+                            margin: EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: Icon(
+                                vehicle['type'].toLowerCase() == 'car'
+                                    ? Icons.directions_car
+                                    : Icons.two_wheeler,
+                                color: Color(0xFFE94560),
+                              ),
+                              title: Text(
+                                vehicle['type'],
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: Text(
+                                vehicle['number'],
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: remarks,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          labelText: "Remarks",
+                          alignLabelWithHint: true,
+                          labelStyle: TextStyle(color: Colors.white70),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Colors.white.withOpacity(0.3),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Color(0xFFE94560),
+                              width: 2,
+                            ),
+                          ),
+                          fillColor: Colors.white.withOpacity(0.05),
+                          filled: true,
                         ),
-                      );
-                      Future.delayed(Duration(seconds: 3), () async {
-                        Navigator.pop(context);
-                      });
-                    })
-              ],
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      SizedBox(height: 16),
+                      Card(
+                        color: Colors.white.withOpacity(0.05),
+                        child: SwitchListTile(
+                          title: Text(
+                            'Approve User',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            isSwitched
+                                ? 'User is verified'
+                                : 'User is pending verification',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          value: isSwitched,
+                          onChanged: (value) async {
+                            setState(() => isSwitched = value);
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(arg['details'].id)
+                                .update({
+                              'isVerified': value,
+                              'verifiedBy': value
+                                  ? FirebaseAuth.instance.currentUser?.email
+                                  : "",
+                              'lastUpdated': FieldValue.serverTimestamp(),
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  value
+                                      ? 'User approved successfully'
+                                      : 'User verification revoked',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor:
+                                    value ? Colors.green : Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                margin: EdgeInsets.all(16),
+                              ),
+                            );
+
+                            Future.delayed(Duration(seconds: 2), () {
+                              Navigator.pop(context);
+                            });
+                          },
+                          activeColor: Color(0xFFE94560),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ));
+          );
   }
 }

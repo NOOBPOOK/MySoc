@@ -1,6 +1,5 @@
 // admin_login_page.dart
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class WatchmanLogin extends StatefulWidget {
   const WatchmanLogin({super.key});
@@ -31,12 +31,12 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
   late SharedPreferences prefs;
   bool isConnected = true;
   StreamSubscription<List<ConnectivityResult>>? subscription;
+  bool _isPasswordVisible = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Loading the shared context
       await _loadStoredValue();
     });
     startListening();
@@ -52,11 +52,9 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> results) async {
-      // Process the list of ConnectivityResult values
       if (results.isEmpty || results.contains(ConnectivityResult.none)) {
         setState(() => isConnected = false);
       } else {
-        // Check if the device has access to the internet
         final hasInternet = await _hasInternetConnection();
         if (hasInternet) {
           setState(() => isConnected = true);
@@ -80,14 +78,11 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
     }
   }
 
-  // Load a stored value
   Future<void> _loadStoredValue() async {
     prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? "";
 
-    // If token exists
     if (token != "") {
-      // Code for decoding the token
       try {
         final jwt = JWT.verify(token, SecretKey('hellovedu'));
 
@@ -125,7 +120,6 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
   }
 
   Future<void> _login() async {
-    // Check if you have a valid internet connection first
     if (isConnected == false) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -158,7 +152,6 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
 
             bool goAhead = true;
 
-            // Check if this is the first login of Watchman User
             if (querySnapshot.docs[0]['isFirst']) {
               goAhead = false;
               showDialog(
@@ -235,7 +228,6 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
                   });
             }
 
-            // Login successful
             else {
               Map watchman = querySnapshot.docs[0].data() as Map;
               watchman['id'] = querySnapshot.docs[0].id;
@@ -271,7 +263,6 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
               throw Exception("You have logged in Succesfully");
             }
           } else {
-            // Login failed
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Invalid credentials'),
@@ -331,91 +322,285 @@ class _WatchmanLoginState extends State<WatchmanLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Login'),
-        backgroundColor: const Color(0xFF1565C0),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Card(
-            margin: const EdgeInsets.all(20),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: AnimationLimiter(
               child: Form(
                 key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      enabled: isValidBuilding ? false : true,
-                      controller: _buildingId,
-                      decoration: const InputDecoration(
-                        labelText: 'BuildingId',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 800),
+                      childAnimationBuilder: (widget) => SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(child: widget),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter BuildingId';
-                        }
-                        return null;
-                      },
+                      children: [
+                        const SizedBox(height: 40),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.1),
+                            border: Border.all(
+                              color: const Color(0xFFE94560),
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFE94560).withOpacity(0.3),
+                                blurRadius: 20,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.account_circle,
+                            size: 80,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        FadeInAnimation(
+                          child: const Text(
+                            'Watchman Login',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        AnimationConfiguration.synchronized(
+                          duration: const Duration(milliseconds: 1000),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white.withOpacity(0.1),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  children: [
+                                    TextFormField(
+                                      enabled: isValidBuilding ? false : true,
+                                      controller: _buildingId,
+                                      style: const TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                        hintText: "Enter Building ID",
+                                        hintStyle: TextStyle(
+                                          color: Colors.black.withOpacity(0.5),
+                                        ),
+                                        labelText: "Building ID",
+                                        labelStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
+                                        prefixIcon: const Icon(
+                                          Icons.home,
+                                          color: Color(0xFFE94560),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: BorderSide(
+                                            color: Colors.white.withOpacity(0.3),
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFE94560),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        fillColor: Colors.white.withOpacity(0.8),
+                                        filled: true,
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter Building ID';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await validateBuild();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFFE94560),
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        elevation: 8,
+                                        shadowColor: const Color(0xFFE94560).withOpacity(0.5),
+                                      ),
+                                      child: const Text(
+                                        "Validate Building",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextFormField(
+                                      controller: _usernameController,
+                                      style: const TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                        hintText: "Enter Username",
+                                        hintStyle: TextStyle(
+                                          color: Colors.black.withOpacity(0.5),
+                                        ),
+                                        labelText: "Username",
+                                        labelStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
+                                        prefixIcon: const Icon(
+                                          Icons.person,
+                                          color: Color(0xFFE94560),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: BorderSide(
+                                            color: Colors.white.withOpacity(0.3),
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFE94560),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        fillColor: Colors.white.withOpacity(0.8),
+                                        filled: true,
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter username';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextFormField(
+                                      controller: _passwordController,
+                                      obscureText: !_isPasswordVisible,
+                                      style: const TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                        hintText: "Enter Password",
+                                        hintStyle: TextStyle(
+                                          color: Colors.black.withOpacity(0.5),
+                                        ),
+                                        labelText: "Password",
+                                        labelStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
+                                        prefixIcon: const Icon(
+                                          Icons.lock,
+                                          color: Color(0xFFE94560),
+                                        ),
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _isPasswordVisible
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
+                                            color: const Color(0xFFE94560),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _isPasswordVisible = !_isPasswordVisible;
+                                            });
+                                          },
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: BorderSide(
+                                            color: Colors.white.withOpacity(0.3),
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFE94560),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        fillColor: Colors.white.withOpacity(0.8),
+                                        filled: true,
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter password';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: _isLoading ? null : _login,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE94560),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 8,
+                            shadowColor: const Color(0xFFE94560).withOpacity(0.5),
+                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            await validateBuild();
-                          },
-                          child: Text("Validate Building")),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter username';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter password';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1565C0),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
-                      ),
-                      child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Login'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

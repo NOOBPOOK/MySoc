@@ -29,4 +29,9 @@ class MySocRoutes {
   static const viewMainatainenanceJob = '/viewMainatainenanceJob';
   static const viewDocDetails = '/viewDocDetails';
   static const Maintain = '/maintain';
+  static const permissions = '/permissions';
+  static const viewPermissions = '/viewPermissions';
+  static const polls = '/polls';
+  static const createPolls = '/createPolls';
+  static const vehiclesTracking = '/vehiclesTracking';
 }
