@@ -27,6 +27,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
   final TextEditingController otherPhoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController flatNumberController = TextEditingController();
+  final TextEditingController flatBHKcontroller = TextEditingController();
   final TextEditingController floorNumberController = TextEditingController();
   final TextEditingController wingController = TextEditingController();
   final TextEditingController familyMembersController = TextEditingController();
@@ -332,6 +333,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             : null,
         'email': currUser?.email,
         'designation': isSec ? 4 : 0,
+        'flatBHK': int.parse(flatBHKcontroller.text.trim().toString()),
         'flatNumber': flatNumberController.text.trim(),
         'floorNumber': int.parse(floorNumberController.text),
         'wing': wingController.text,
@@ -792,6 +794,35 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter flat number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: flatBHKcontroller,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            labelText: "BHK",
+                            labelStyle:
+                                TextStyle(color: Colors.black.withOpacity(0.7)),
+                            prefixIcon: Icon(Icons.home,
+                                color: Colors.black.withOpacity(0.7)),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: Colors.black.withOpacity(0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: primaryColor, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter BHK number';
                             }
                             return null;
                           },
