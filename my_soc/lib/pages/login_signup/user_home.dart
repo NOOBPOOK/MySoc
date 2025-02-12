@@ -27,7 +27,6 @@ class _UserHomeState extends State<UserHome> {
   void initState() {
     super.initState();
     _initializeUserData();
-    _setupNotifications();
   }
 
   Future<void> _initializeUserData() async {
@@ -71,7 +70,7 @@ class _UserHomeState extends State<UserHome> {
         throw Exception(
             'Your account is not verified yet. We will inform you shortly.');
       }
-
+      _setupNotifications();
       setState(() => isLoading = false);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

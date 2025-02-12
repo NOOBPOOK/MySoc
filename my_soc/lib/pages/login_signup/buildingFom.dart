@@ -5,11 +5,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:cloudinary/cloudinary.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/services.dart';
 
 class WingDetails {
   String wingName;
@@ -40,8 +44,6 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController buildingNameController = TextEditingController();
   final TextEditingController streetNameController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController stateController = TextEditingController();
   final TextEditingController constructionYearController =
       TextEditingController();
   final TextEditingController totalFlatsController = TextEditingController();
@@ -95,6 +97,15 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
   double regStatus = 0.0;
   double occStatus = 0.0;
 
+  late Map<String, dynamic> LocationInfo;
+  List<String> _stateNames = [];
+  List<String> _cities = [];
+  String? selectedCity;
+  String? selectedState;
+  bool isloading = true;
+
+  TextEditingController cityController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -110,6 +121,27 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
       apiSecret: dotenv.env['ColudinaryApiSecret'] ?? "",
       cloudName: dotenv.env['ColudinaryCloudName'] ?? "",
     );
+
+    load_state_data();
+  }
+
+  void load_state_data() async {
+    try {
+      final String jsonString = await rootBundle
+          .loadString('C:/GithubRepos/MySoc/my_soc/lib/location.json');
+      LocationInfo = jsonDecode(jsonString);
+
+      _stateNames = LocationInfo.keys.toList();
+      // final city = LocationInfo[selectedState] as List;
+      // _cities = city.map((item) => item.toString()).toList();
+      Future.delayed(Duration(seconds: 2), () {
+        setState(() {
+          isloading = false;
+        });
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _pickBuildingImages() async {
@@ -298,6 +330,8 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
 
   Future<void> _storeData() async {
     try {
+      // print(state);
+
       // Store building data in Firestore
       List<Map<String, dynamic>> wingData =
           wings.map((wing) => wing.toMap()).toList();
@@ -305,8 +339,8 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
         'email': currUser?.email,
         'buildingName': buildingNameController.text,
         'streetName': streetNameController.text,
-        'city': cityController.text,
-        'state': stateController.text,
+        'city': selectedCity.toString(),
+        'state': selectedState.toString(),
         'landmark': landmarkController.text,
         'constructionYear': int.tryParse(constructionYearController.text) ?? 0,
         'totalFlats': int.tryParse(totalFlatsController.text) ?? 0,
@@ -356,6 +390,13 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
         isSubmitting = false;
       });
     }
+  }
+
+  void load_cities(String state) async {
+    final city = LocationInfo[state] as List;
+    _cities = city.map((item) => item.toString()).toList();
+    selectedCity = _cities[0];
+    setState(() {});
   }
 
   Widget _buildWingDetailsSection() {
@@ -463,329 +504,375 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
         elevation: 2,
         centerTitle: true,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [backgroundColor, Colors.white],
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _buildSectionHeader('Basic Information'),
+      body: isloading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [backgroundColor, Colors.white],
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _buildSectionHeader('Basic Information'),
 
-                  TextFormField(
-                    controller: buildingNameController,
-                    decoration: InputDecoration(
-                      labelText: "Building Name",
-                      prefixIcon: Icon(Icons.business),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter building name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: streetNameController,
-                    decoration: InputDecoration(
-                      labelText: "Street Name",
-                      prefixIcon: Icon(Icons.aod),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter street name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: cityController,
+                        TextFormField(
+                          controller: buildingNameController,
                           decoration: InputDecoration(
-                            labelText: "City",
-                            prefixIcon: Icon(Icons.location_city),
+                            labelText: "Building Name",
+                            prefixIcon: Icon(Icons.business),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter city';
+                              return 'Please enter building name';
                             }
                             return null;
                           },
                         ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: TextFormField(
-                          controller: stateController,
+                        SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: streetNameController,
                           decoration: InputDecoration(
-                            labelText: "State",
-                            prefixIcon: Icon(Icons.map),
+                            labelText: "Street Name",
+                            prefixIcon: Icon(Icons.aod),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter state';
+                              return 'Please enter street name';
                             }
                             return null;
                           },
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
+                        SizedBox(height: 16),
 
-                  TextFormField(
-                    controller: landmarkController,
-                    decoration: InputDecoration(
-                      labelText: "Landmark (Optional)",
-                      prefixIcon: Icon(Icons.place),
-                    ),
-                  ),
-                  SizedBox(height: 16),
+                        Autocomplete(
+                          optionsBuilder: (TextEditingValue textEditingValue) {
+                            if (textEditingValue.text.isEmpty) {
+                              return const Iterable<String>.empty();
+                            }
+                            return _stateNames.where((option) {
+                              return option.toLowerCase().contains(
+                                  textEditingValue.text.toLowerCase());
+                            });
+                          },
+                          onSelected: (String option) {
+                            setState(() {
+                              cityController.text = "";
+                              selectedCity = "";
+                              selectedState = option;
+                            });
+                            load_cities(option);
+                            // print('You selected: $option');
+                          },
+                          fieldViewBuilder: (BuildContext context,
+                              TextEditingController textEditingController,
+                              FocusNode focusNode,
+                              VoidCallback onFieldSubmitted) {
+                            return TextFormField(
+                              controller: textEditingController,
+                              focusNode: focusNode,
+                              onFieldSubmitted: (String value) {
+                                onFieldSubmitted();
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Enter State name',
+                                border: OutlineInputBorder(),
+                              ),
+                            );
+                          },
+                        ),
 
-                  _buildSectionHeader('Building Details'),
+                        SizedBox(height: 16),
 
-                  TextFormField(
-                    controller: constructionYearController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Construction Year",
-                      prefixIcon: Icon(Icons.calendar_today),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter construction year';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
+                        Autocomplete(
+                          optionsBuilder: (TextEditingValue textEditingValue) {
+                            if (textEditingValue.text.isEmpty) {
+                              return const Iterable<String>.empty();
+                            }
+                            return _cities.where((option) {
+                              return option.toLowerCase().contains(
+                                  textEditingValue.text.toLowerCase());
+                            });
+                          },
+                          onSelected: (String option) {
+                            setState(() {
+                              selectedState = option;
+                            });
+                            // print('You selected: $option');
+                          },
+                          fieldViewBuilder: (BuildContext context,
+                              TextEditingController textEditingController,
+                              FocusNode focusNode,
+                              VoidCallback onFieldSubmitted) {
+                            cityController = textEditingController;
+                            return TextFormField(
+                              controller: textEditingController,
+                              focusNode: focusNode,
+                              onFieldSubmitted: (String value) {
+                                onFieldSubmitted();
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Enter City name',
+                                border: OutlineInputBorder(),
+                              ),
+                            );
+                          },
+                        ),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: totalFlatsController,
+                        SizedBox(height: 20),
+
+                        TextFormField(
+                          controller: landmarkController,
+                          decoration: InputDecoration(
+                            labelText: "Landmark (Optional)",
+                            prefixIcon: Icon(Icons.place),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+
+                        _buildSectionHeader('Building Details'),
+
+                        TextFormField(
+                          controller: constructionYearController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: "Total Flats",
-                            prefixIcon: Icon(Icons.stairs),
+                            labelText: "Construction Year",
+                            prefixIcon: Icon(Icons.calendar_today),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Required';
+                              return 'Please enter construction year';
                             }
                             return null;
                           },
                         ),
-                      ),
-                      SizedBox(width: 16),
-                    ],
-                  ),
-                  SizedBox(height: 16),
+                        SizedBox(height: 16),
 
-                  TextFormField(
-                    controller: buildingAreaController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Total Built-up Area (sq ft)",
-                      prefixIcon: Icon(Icons.square_foot),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter built-up area';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  _buildWingDetailsSection(),
-                  _buildSectionHeader('Building Images'),
-                  _buildImageGrid(),
-                  if (imageUploadStatus != 0.0)
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: LinearProgressIndicator(
-                        value: imageUploadStatus,
-                      ),
-                    ),
-                  ElevatedButton(
-                      onPressed: _uploadImages, child: Text("Upload Images")),
-                  SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: totalFlatsController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: "Total Flats",
+                                  prefixIcon: Icon(Icons.stairs),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Required';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                          ],
+                        ),
+                        SizedBox(height: 16),
 
-                  _buildSectionHeader('Building Documents'),
-                  ElevatedButton.icon(
-                    onPressed: () => _pickDocument('registration'),
-                    icon: Icon(Icons.upload_file),
-                    label: Text('Upload Registration Document'),
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                  ),
-                  if (_registrationDoc != null)
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Registration document uploaded: ',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  if (regStatus != 0.0)
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: LinearProgressIndicator(
-                        value: regStatus,
-                      ),
-                    ),
-                  SizedBox(height: 16),
-
-                  ElevatedButton.icon(
-                    onPressed: () => _pickDocument('occupancy'),
-                    icon: Icon(Icons.upload_file),
-                    label: Text('Upload Occupancy Certificate'),
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                  ),
-                  if (_occupancyCertificate != null)
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Occupancy certificate uploaded:',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-
-                  if (occStatus != 0.0)
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: LinearProgressIndicator(
-                        value: occStatus,
-                      ),
-                    ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                        onPressed: _uploadDocuments,
-                        child: Text("Upload Docs")),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  _buildSectionHeader('Facilities & Amenities'),
-
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _availableAmenities.map((amenity) {
-                      final isSelected = _amenities.contains(amenity);
-                      return FilterChip(
-                        label: Text(amenity),
-                        selected: isSelected,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            if (selected) {
-                              _amenities.add(amenity);
-                            } else {
-                              _amenities.remove(amenity);
+                        TextFormField(
+                          controller: buildingAreaController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: "Total Built-up Area (sq ft)",
+                            prefixIcon: Icon(Icons.square_foot),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter built-up area';
                             }
-                          });
-                        },
-                        selectedColor: Colors.blue[100],
-                        checkmarkColor: Colors.blue,
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(height: 20),
-
-                  _buildSectionHeader('Location Information'),
-                  SizedBox(height: 20),
-
-                  ElevatedButton(
-                      onPressed: () async {
-                        final location = await Navigator.pushNamed(
-                                context, MySocRoutes.formMaps,
-                                arguments: {'location': current_location})
-                            as LatLng;
-                        setState(() {
-                          current_location = location;
-                        });
-                      },
-                      child: Text("Current Location $current_location")),
-
-                  // Submit Button
-                  Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Validation checks
-                          if (_buildingImages.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Please add at least one building image'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                            return;
-                          }
-
-                          if (_registrationDoc == null ||
-                              _occupancyCertificate == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Please upload all required documents'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                            return;
-                          }
-
-                          _storeData();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                            return null;
+                          },
                         ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        child: Text(
-                          'Submit Building Registration',
-                          style: TextStyle(fontSize: 18),
+                        SizedBox(height: 20),
+                        _buildWingDetailsSection(),
+                        _buildSectionHeader('Building Images'),
+                        _buildImageGrid(),
+                        if (imageUploadStatus != 0.0)
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: LinearProgressIndicator(
+                              value: imageUploadStatus,
+                            ),
+                          ),
+                        ElevatedButton(
+                            onPressed: _uploadImages,
+                            child: Text("Upload Images")),
+                        SizedBox(height: 20),
+
+                        _buildSectionHeader('Building Documents'),
+                        ElevatedButton.icon(
+                          onPressed: () => _pickDocument('registration'),
+                          icon: Icon(Icons.upload_file),
+                          label: Text('Upload Registration Document'),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                          ),
                         ),
-                      ),
+                        if (_registrationDoc != null)
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              'Registration document uploaded: ',
+                              style: TextStyle(color: Colors.green),
+                            ),
+                          ),
+                        if (regStatus != 0.0)
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: LinearProgressIndicator(
+                              value: regStatus,
+                            ),
+                          ),
+                        SizedBox(height: 16),
+
+                        ElevatedButton.icon(
+                          onPressed: () => _pickDocument('occupancy'),
+                          icon: Icon(Icons.upload_file),
+                          label: Text('Upload Occupancy Certificate'),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                          ),
+                        ),
+                        if (_occupancyCertificate != null)
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              'Occupancy certificate uploaded:',
+                              style: TextStyle(color: Colors.green),
+                            ),
+                          ),
+
+                        if (occStatus != 0.0)
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: LinearProgressIndicator(
+                              value: occStatus,
+                            ),
+                          ),
+
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                              onPressed: _uploadDocuments,
+                              child: Text("Upload Docs")),
+                        ),
+
+                        SizedBox(height: 20),
+
+                        _buildSectionHeader('Facilities & Amenities'),
+
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _availableAmenities.map((amenity) {
+                            final isSelected = _amenities.contains(amenity);
+                            return FilterChip(
+                              label: Text(amenity),
+                              selected: isSelected,
+                              onSelected: (bool selected) {
+                                setState(() {
+                                  if (selected) {
+                                    _amenities.add(amenity);
+                                  } else {
+                                    _amenities.remove(amenity);
+                                  }
+                                });
+                              },
+                              selectedColor: Colors.blue[100],
+                              checkmarkColor: Colors.blue,
+                            );
+                          }).toList(),
+                        ),
+                        SizedBox(height: 20),
+
+                        _buildSectionHeader('Location Information'),
+                        SizedBox(height: 20),
+
+                        ElevatedButton(
+                            onPressed: () async {
+                              final location = await Navigator.pushNamed(
+                                      context, MySocRoutes.formMaps,
+                                      arguments: {'location': current_location})
+                                  as LatLng;
+                              setState(() {
+                                current_location = location;
+                              });
+                            },
+                            child: Text("Current Location $current_location")),
+
+                        // Submit Button
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              print(selectedCity);
+                              print(selectedState);
+                              if (_formKey.currentState!.validate()) {
+                                // Validation checks
+                                if (_buildingImages.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Please add at least one building image'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                if (_registrationDoc == null ||
+                                    _occupancyCertificate == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Please upload all required documents'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                _storeData();
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              child: Text(
+                                'Submit Building Registration',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }
