@@ -34,4 +34,8 @@ class MySocRoutes {
   static const polls = '/polls';
   static const createPolls = '/createPolls';
   static const vehiclesTracking = '/vehiclesTracking';
+
+  // For UI Testing Purposes
+  static const testing = '/test';
+  static const testlogin = 'test_login';
 }

@@ -43,6 +43,9 @@ import 'package:my_soc/practice/practice.dart';
 import 'package:my_soc/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:my_soc/signup/login.dart';
+import 'package:my_soc/signup/start.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   // Load the .env file
@@ -51,6 +54,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top],
+  );
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor:
+          Colors.transparent, // Make status bar transparent as well (optional)
+      systemNavigationBarColor:
+          Colors.transparent, // Make navigation bar transparent
+    ),
   );
 
   runApp(MyApp());
@@ -88,9 +105,10 @@ class MyApp extends StatelessWidget {
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
         // initialRoute: MySocRoutes.signupRoute,
-        initialRoute:
-            MySocRoutes.loginRoute, // Set the initial route to the login page
-        home: SafeArea(child: userExists ? UserHome() : LoginPage()),
+        // initialRoute:
+        // MySocRoutes.testing, // Set the initial route to the login page
+        // home: SafeArea(child: userExists ? UserHome() : LoginPage()),
+        home: HomeScreen(),
         routes: {
           MySocRoutes.signupRoute: (context) => const SignupPage(),
           MySocRoutes.loginRoute: (context) => const LoginPage(),
@@ -131,6 +149,10 @@ class MyApp extends StatelessWidget {
               ViewMainatainenanceJob(),
           MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
           MySocRoutes.Maintain: (context) => Maintain(),
+
+          // For testing UI we will use this route
+          MySocRoutes.testing: (context) => HomeScreen(),
+          MySocRoutes.testlogin: (context) => Login(),
         });
   }
 }
