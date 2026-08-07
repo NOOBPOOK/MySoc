@@ -19,7 +19,7 @@ class UserProvider extends ChangeNotifier {
 }
 
 class ViewPollsPage extends StatefulWidget {
-  const ViewPollsPage({Key? key}) : super(key: key);
+  const ViewPollsPage({super.key});
 
   @override
   _ViewPollsPageState createState() => _ViewPollsPageState();

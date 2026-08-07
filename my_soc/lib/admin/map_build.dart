@@ -50,11 +50,9 @@ class _BuildingMapsState extends State<BuildingMaps> {
   void _showInfoWindowForMarker(LatLng loc) async {
     Marker marker = _markers.firstWhere((marker) => marker.position == loc,
         orElse: () => throw Exception('No Marker found!'));
-    if (marker != null && _mapController != null) {
-      final GoogleMapController controller = await _mapController.future;
-      controller.showMarkerInfoWindow(marker.markerId);
+    final GoogleMapController controller = await _mapController.future;
+    controller.showMarkerInfoWindow(marker.markerId);
     }
-  }
 
   void moveToBuilding(LatLng location) async {
     final GoogleMapController controller = await _mapController.future;

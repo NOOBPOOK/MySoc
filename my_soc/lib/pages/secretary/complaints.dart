@@ -9,6 +9,8 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:intl/intl.dart';
 
 class ComplaintsPage extends StatefulWidget {
+  const ComplaintsPage({super.key});
+
   @override
   _ComplaintsPageState createState() => _ComplaintsPageState();
 }
@@ -123,8 +125,8 @@ Widget build(BuildContext context) {
                   onPressed: () {
                     // Add your onPressed code here
                   },
-                  child: Icon(Icons.add),
                   backgroundColor: Color(0xFFE94560),
+                  child: Icon(Icons.add),
                 ),
               ),
             ],

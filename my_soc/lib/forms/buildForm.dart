@@ -10,10 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:wave/wave.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:path/path.dart' as p;
-import 'package:wave/config.dart';
 import 'package:uuid/uuid.dart';
 
 class Buildform extends StatefulWidget {
@@ -199,7 +197,7 @@ class _BuildformState extends State<Buildform> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     // height: MediaQuery.of(context).size.height,
                     child: Text(
@@ -508,7 +506,7 @@ class _BuildformState extends State<Buildform> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     // height: MediaQuery.of(context).size.height,
                     child: Text(
@@ -756,7 +754,7 @@ class _BuildformState extends State<Buildform> {
                           borderRadius: BorderRadius.circular(30),
                           child: Stack(
                             children: [
-                              Container(
+                              SizedBox(
                                 height: 150,
                                 child: Image.asset(
                                     fit: BoxFit.fitHeight,
@@ -841,14 +839,14 @@ class _BuildformState extends State<Buildform> {
   }
 
   Widget _thirdPage() {
-    return Container(
+    return SizedBox(
       height: double.infinity,
       width: double.infinity,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               width: double.infinity,
               // height: MediaQuery.of(context).size.height,
               child: Text(
@@ -864,7 +862,7 @@ class _BuildformState extends State<Buildform> {
             SizedBox(
               height: 20,
             ),
-            Container(
+            SizedBox(
               height: 150,
               // color: Colors.lightBlueAccent,
               child: SingleChildScrollView(
@@ -932,7 +930,7 @@ class _BuildformState extends State<Buildform> {
             SizedBox(
               height: 30,
             ),
-            Container(
+            SizedBox(
               height: 300,
               child: PageView.builder(
                   controller: _imageController,
@@ -953,7 +951,7 @@ class _BuildformState extends State<Buildform> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
+                                SizedBox(
                                   height: 100,
                                   width: 100,
                                   child: ClipRRect(
@@ -1200,14 +1198,14 @@ class _BuildformState extends State<Buildform> {
   }
 
   Widget _fourthPage() {
-    return Container(
+    return SizedBox(
       height: double.infinity,
       width: double.infinity,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               width: double.infinity,
               // height: MediaQuery.of(context).size.height,
               child: Text(
@@ -1224,7 +1222,7 @@ class _BuildformState extends State<Buildform> {
               height: 20,
             ),
             // Assuming we have 12 default Facilities
-            Container(
+            SizedBox(
               height: 250,
               child: PageView.builder(
                   controller: _facilitiesController,
@@ -1329,7 +1327,7 @@ class _BuildformState extends State<Buildform> {
               thickness: 2,
               color: Color(0xFFBFBFBF),
             ),
-            Container(
+            SizedBox(
               width: double.infinity,
               // height: MediaQuery.of(context).size.height,
               child: Text(
@@ -1345,7 +1343,7 @@ class _BuildformState extends State<Buildform> {
             SizedBox(
               height: 20,
             ),
-            Container(
+            SizedBox(
               height: (MediaQuery.of(context).size.height / 3),
               // width: MediaQuery.of(context).size.width,
               // color: Colors.amber,
@@ -1427,7 +1425,7 @@ class _BuildformState extends State<Buildform> {
   }
 
   Widget _fifthPage() {
-    return Container(
+    return SizedBox(
       // height: double.infinity,
       width: double.infinity,
       child: Padding(
@@ -1436,7 +1434,7 @@ class _BuildformState extends State<Buildform> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: double.infinity,
                 // height: MediaQuery.of(context).size.height,
                 child: Text(
@@ -1914,7 +1912,7 @@ class _BuildformState extends State<Buildform> {
         ),
         child: Stack(
           children: [
-            Container(
+            SizedBox(
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.25,
               child: Center(

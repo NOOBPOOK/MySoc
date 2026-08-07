@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_soc/authentication/login.dart';
 import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -27,7 +28,7 @@ class HomeScreen extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: Container(
+              child: SizedBox(
                 // width: 134,
                 height: 57,
                 child: Text(
@@ -50,11 +51,15 @@ class HomeScreen extends StatelessWidget {
                   child: Center(
                       child: GestureDetector(
                     onTap: () {
-                      context.pushNamedTransition(
-                          routeName: MySocRoutes.loginRoute,
-                          duration: Duration(milliseconds: 500),
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: const Login(),
+                          childCurrent: const HomeScreen(),
+                          duration: const Duration(milliseconds: 500),
                           type: PageTransitionType.bottomToTopJoined,
-                          cc: HomeScreen());
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

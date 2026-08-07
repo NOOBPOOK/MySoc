@@ -14,7 +14,6 @@ import 'package:my_soc/forms/userForm.dart';
 import 'package:my_soc/pages/login_signup/buildingForm.dart';
 import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/pages/login_signup/chooser.dart';
-import 'package:my_soc/pages/login_signup/login.dart';
 import 'package:my_soc/pages/secretary/announcements.dart';
 import 'package:my_soc/pages/secretary/create_polls.dart';
 import 'package:my_soc/pages/secretary/create_watchman.dart';
@@ -110,7 +109,7 @@ class MyApp extends StatelessWidget {
         // initialRoute:
         // MySocRoutes.testing, // Set the initial route to the login page
         // home: SafeArea(child: userExists ? UserHome() : LoginPage()),
-        home: Buildform(),
+        home: Login(),
         routes: {
           // MySocRoutes.signupRoute: (context) => const SignupPage(),
           // MySocRoutes.loginRoute: (context) => const LoginPage(),
@@ -147,8 +146,6 @@ class MyApp extends StatelessWidget {
           MySocRoutes.viewPermissions: (context) => ViewPermissionsPage(),
           MySocRoutes.polls: (context) => ViewPollsPage(),
           MySocRoutes.vehiclesTracking: (context) => VehicleTrackingPage(),
-          MySocRoutes.viewMainatainenanceJob: (context) =>
-              ViewMainatainenanceJob(),
           MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
           MySocRoutes.Maintain: (context) => Maintain(),
 

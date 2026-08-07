@@ -8,6 +8,8 @@ void main() {
 }
 
 class FullScreenPageView extends StatelessWidget {
+  const FullScreenPageView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

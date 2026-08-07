@@ -1218,7 +1218,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                           ),
                         ],
                         SizedBox(height: 32),
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {

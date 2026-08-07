@@ -352,7 +352,7 @@ class _ViewAllDocDetailsState extends State<ViewAllDocDetails> {
                               return AlertDialog(
                                 title: Text(
                                     "${doc['wing']} - ${doc['flatNumber']}"),
-                                content: Container(
+                                content: SizedBox(
                                   height: 150,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -360,7 +360,7 @@ class _ViewAllDocDetailsState extends State<ViewAllDocDetails> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text("Email: ${doc['residentEmail']}"),
-                                      Text("Due Date: ${formatDue}"),
+                                      Text("Due Date: $formatDue"),
                                       Text("Amount: ${doc['amount']}"),
                                       Text("Paid: ${doc['status']}"),
                                       Text(
@@ -390,7 +390,7 @@ class _ViewAllDocDetailsState extends State<ViewAllDocDetails> {
                           : Icon(Icons.pending_actions),
                       title: Text("${doc['wing']} - ${doc['flatNumber']}"),
                       subtitle: Text(
-                          "Maintainenace due of ${doc['amount']} \$ \n ${dueDateString}"),
+                          "Maintainenace due of ${doc['amount']} \$ \n $dueDateString"),
                     );
                   });
             }));

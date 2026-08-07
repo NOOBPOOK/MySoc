@@ -14,10 +14,10 @@ class CreatePollsPage extends StatefulWidget {
   final int userDesignation;
 
   const CreatePollsPage({
-    Key? key,
+    super.key,
     required this.userId,
     required this.userDesignation,
-  }) : super(key: key);
+  });
 
   @override
   _CreatePollsPageState createState() => _CreatePollsPageState();
@@ -499,7 +499,7 @@ class _CreatePollsPageState extends State<CreatePollsPage> {
                                     ),
                                   ),
                                 );
-                              }).toList(),
+                              }),
                               if (widget.userDesignation >= 3)
                                 const Padding(
                                   padding: EdgeInsets.only(top: 16),

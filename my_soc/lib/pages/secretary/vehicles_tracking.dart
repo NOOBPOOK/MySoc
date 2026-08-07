@@ -5,7 +5,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class VehicleTrackingPage extends StatefulWidget {
-  const VehicleTrackingPage({Key? key}) : super(key: key);
+  const VehicleTrackingPage({super.key});
 
   @override
   _VehicleTrackingPageState createState() => _VehicleTrackingPageState();

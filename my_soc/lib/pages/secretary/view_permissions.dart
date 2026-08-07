@@ -8,6 +8,8 @@ import 'package:mailer/smtp_server.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class ViewPermissionsPage extends StatefulWidget {
+  const ViewPermissionsPage({super.key});
+
   @override
   _ViewPermissionsPageState createState() => _ViewPermissionsPageState();
 }
@@ -91,7 +93,7 @@ Building Management Team
       print('Status email sent successfully');
     } catch (e) {
       print('Error sending email: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -216,7 +218,7 @@ Building Management Team
         if (requests.isEmpty) {
           return Center(
             child: Text(
-              'No ${status} requests',
+              'No $status requests',
               style: TextStyle(fontSize: 18, color: Colors.white),
             ),
           );
@@ -664,6 +666,6 @@ Building Management Team
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

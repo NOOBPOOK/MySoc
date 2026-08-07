@@ -181,7 +181,7 @@ class _WatchmanHomeState extends State<WatchmanHome> {
                       SizedBox(
                         height: 10,
                       ),
-                      Container(
+                      SizedBox(
                         width: double.infinity,
                         child: Padding(
                           padding: const EdgeInsets.all(2.0),
@@ -464,7 +464,7 @@ class _WatchmanHomeState extends State<WatchmanHome> {
                       SizedBox(
                         height: 10,
                       ),
-                      Container(
+                      SizedBox(
                         width: double.infinity,
                         child: Padding(
                           padding: const EdgeInsets.all(2.0),
@@ -562,6 +562,7 @@ class _WatchmanHomeState extends State<WatchmanHome> {
         });
   }
 
+  @override
   Widget build(BuildContext context) {
     // print("This is getting rebuild");
 
@@ -614,7 +615,7 @@ class _WatchmanHomeState extends State<WatchmanHome> {
           Positioned(
             left: 0,
             bottom: 0,
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -746,7 +747,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
 
 class DisplayRecords extends StatefulWidget {
   final logs;
-  DisplayRecords({super.key, this.logs});
+  const DisplayRecords({super.key, this.logs});
 
   @override
   State<DisplayRecords> createState() => _DisplayRecordsState();

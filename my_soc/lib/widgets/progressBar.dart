@@ -19,7 +19,7 @@ class _CustomProgressBarState extends State<CustomProgressBar> {
       width: double.infinity,
       child: LayoutBuilder(builder: (context, constraints) {
         // print(constraints.maxWidth / 100 * widget.progress);
-        return Container(
+        return SizedBox(
           width: constraints.maxWidth,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),

@@ -17,7 +17,6 @@ import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:wave/config.dart';
 
 class DigitLimitFormatter extends TextInputFormatter {
   final int maxLength;
@@ -383,7 +382,7 @@ class _BuildformState extends State<Userform> {
   Widget _buildSecondPage(context) {
     return Form(
       key: _formkey2,
-      child: Container(
+      child: SizedBox(
         // height: 100,
         width: double.infinity,
         child: Padding(
@@ -394,7 +393,7 @@ class _BuildformState extends State<Userform> {
               crossAxisAlignment: CrossAxisAlignment.start,
               // shrinkWrap: true,
               children: [
-                Container(
+                SizedBox(
                   width: double.infinity,
                   // height: MediaQuery.of(context).size.height,
                   child: Text(
@@ -824,7 +823,7 @@ class _BuildformState extends State<Userform> {
   Widget _buildThirdPage() {
     return Form(
       key: _formkey3,
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -832,7 +831,7 @@ class _BuildformState extends State<Userform> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
+                SizedBox(
                   width: double.infinity,
                   // height: MediaQuery.of(context).size.height,
                   child: Text(
@@ -1129,7 +1128,7 @@ class _BuildformState extends State<Userform> {
   }
 
   Widget _buildForthPage() {
-    return Container(
+    return SizedBox(
       // height: double.infinity,
       width: double.infinity,
       child: Padding(
@@ -1138,7 +1137,7 @@ class _BuildformState extends State<Userform> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: double.infinity,
                 // height: MediaQuery.of(context).size.height,
                 child: Text(
@@ -1651,7 +1650,7 @@ class _BuildformState extends State<Userform> {
         ),
         child: Stack(
           children: [
-            Container(
+            SizedBox(
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.25,
               child: Center(

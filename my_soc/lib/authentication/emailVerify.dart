@@ -36,7 +36,7 @@ class _EmailverifyState extends State<Emailverify> {
   Future<void> checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
     var isEmailVerified =
-        await FirebaseAuth.instance.currentUser!.emailVerified;
+        FirebaseAuth.instance.currentUser!.emailVerified;
     if (isEmailVerified) {
       listen?.cancel();
       Future.delayed(Duration(seconds: 2), () {
@@ -71,7 +71,7 @@ class _EmailverifyState extends State<Emailverify> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 8.0),
-        child: Container(
+        child: SizedBox(
           height: double.infinity,
           child: SingleChildScrollView(
             child: Column(
@@ -81,7 +81,7 @@ class _EmailverifyState extends State<Emailverify> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 6,
                 ),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   // height: MediaQuery.of(context).size.height,
                   child: Text(
@@ -97,7 +97,7 @@ class _EmailverifyState extends State<Emailverify> {
                 SizedBox(
                   height: 30,
                 ),
-                Container(
+                SizedBox(
                   height: 250,
                   width: 250,
                   child: ClipOval(

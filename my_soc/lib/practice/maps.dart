@@ -42,7 +42,7 @@ class _GoogleMapsRenderState extends State<GoogleMapsRender> {
     return Scaffold(
       body: Column(
         children: [
-          Container(
+          SizedBox(
             height: 400,
             width: 400,
             child: GoogleMap(

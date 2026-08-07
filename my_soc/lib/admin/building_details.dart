@@ -21,9 +21,9 @@ class BuildingDetailsPage extends StatefulWidget {
     required this.onVerificationChanged,
     required this.onVerifyBuilding,
     required this.onRejectBuilding,
-    Key? key,
+    super.key,
     required List<String> wings,
-  }) : super(key: key);
+  });
 
   @override
   State<BuildingDetailsPage> createState() => _BuildingDetailsPageState();

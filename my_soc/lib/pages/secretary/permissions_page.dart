@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class PermissionsPage extends StatefulWidget {
+  const PermissionsPage({super.key});
+
   @override
   _PermissionsPageState createState() => _PermissionsPageState();
 }

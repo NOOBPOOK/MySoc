@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:my_soc/pages/login_signup/login.dart';
+import 'package:my_soc/authentication/login.dart';
 import 'package:my_soc/routes.dart';
 
 class ChooserPage extends StatelessWidget {
@@ -89,7 +89,7 @@ class ChooserPage extends StatelessWidget {
                       FirebaseAuth.instance.signOut();
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => Login()),
                         (route) => false,
                       );
                     },

@@ -2,7 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:my_soc/pages/login_signup/login.dart';
+import 'package:my_soc/authentication/login.dart';
 import 'package:my_soc/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -276,7 +276,7 @@ class _UserHomeState extends State<UserHome> {
               if (mounted) {
                 // Check if widget is still mounted
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  MaterialPageRoute(builder: (context) => const Login()),
                   (route) => false,
                 );
               }

@@ -816,7 +816,7 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
                             child: Text("Current Location $current_location")),
 
                         // Submit Button
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {

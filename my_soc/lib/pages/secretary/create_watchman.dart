@@ -12,10 +12,10 @@ class WatchmanForm extends StatefulWidget {
   final QueryDocumentSnapshot user_data;
 
   const WatchmanForm({
-    Key? key,
+    super.key,
     required this.build_data,
     required this.user_data,
-  }) : super(key: key);
+  });
 
   @override
   _WatchmanFormState createState() => _WatchmanFormState();
@@ -102,8 +102,9 @@ class _WatchmanFormState extends State<WatchmanForm> {
 
   Future<void> uploadDocs() async {
     try {
-      if (_document == null)
+      if (_document == null) {
         throw Exception('Please upload the necessary PDFs');
+      }
       final response = await cloudinary.upload(
         file: _document!.path,
         resourceType: CloudinaryResourceType.auto,
