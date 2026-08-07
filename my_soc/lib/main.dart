@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +6,12 @@ import 'package:my_soc/admin/admin_payments.dart';
 import 'package:my_soc/admin/admin_verification.dart';
 import 'package:my_soc/admin/admin_login_page.dart';
 import 'package:my_soc/admin/map_build.dart';
+import 'package:my_soc/authentication/emailVerify.dart';
+import 'package:my_soc/authentication/signup.dart';
 import 'package:my_soc/firebase_options.dart';
-import 'package:my_soc/pages/login_signup/buildingFom.dart';
+import 'package:my_soc/forms/buildForm.dart';
+import 'package:my_soc/forms/userForm.dart';
+import 'package:my_soc/pages/login_signup/buildingForm.dart';
 import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/pages/login_signup/chooser.dart';
 import 'package:my_soc/pages/login_signup/login.dart';
@@ -43,8 +45,8 @@ import 'package:my_soc/practice/practice.dart';
 import 'package:my_soc/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:my_soc/signup/login.dart';
-import 'package:my_soc/signup/start.dart';
+import 'package:my_soc/authentication/login.dart';
+import 'package:my_soc/authentication/start.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -108,12 +110,12 @@ class MyApp extends StatelessWidget {
         // initialRoute:
         // MySocRoutes.testing, // Set the initial route to the login page
         // home: SafeArea(child: userExists ? UserHome() : LoginPage()),
-        home: HomeScreen(),
+        home: Buildform(),
         routes: {
-          MySocRoutes.signupRoute: (context) => const SignupPage(),
-          MySocRoutes.loginRoute: (context) => const LoginPage(),
-          MySocRoutes.emailVerify: (context) => const VerifyEmailMessagePage(),
-          MySocRoutes.homeRoute: (context) => const UserHome(),
+          // MySocRoutes.signupRoute: (context) => const SignupPage(),
+          // MySocRoutes.loginRoute: (context) => const LoginPage(),
+          // MySocRoutes.emailVerify: (context) => const Emailverify(),
+          MySocRoutes.userDashboard: (context) => const UserHome(),
           MySocRoutes.buildingForm: (context) =>
               const BuildingRegistrationPage(),
           MySocRoutes.userForm: (context) => UserRegistrationPage(),
@@ -151,8 +153,13 @@ class MyApp extends StatelessWidget {
           MySocRoutes.Maintain: (context) => Maintain(),
 
           // For testing UI we will use this route
-          MySocRoutes.testing: (context) => HomeScreen(),
-          MySocRoutes.testlogin: (context) => Login(),
+          MySocRoutes.homeRoute: (context) => HomeScreen(),
+          MySocRoutes.loginRoute: (context) => Login(),
+          MySocRoutes.signupRoute: (context) => Signup(),
+          MySocRoutes.emailVerify: (context) => const Emailverify(),
+
+          // Currently testing route
+          MySocRoutes.test: (context) => Signup(),
         });
   }
 }

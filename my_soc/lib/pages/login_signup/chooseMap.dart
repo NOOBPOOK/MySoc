@@ -23,10 +23,11 @@ class _ChooseLocationState extends State<ChooseLocation> {
   @override
   void initState() {
     super.initState();
+    print("Reached Here...");
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Get all the verified buildings in the database
-      Map args = ModalRoute.of(context)!.settings.arguments as Map;
-      current_location = args['location'];
+      // // Get all the verified buildings in the database
+      // Map args = ModalRoute.of(context)!.settings.arguments as Map;
+      // current_location = args['location'];
       QuerySnapshot buildings =
           await FirebaseFirestore.instance.collection('buildings').get();
       buildMaps = buildings.docs;

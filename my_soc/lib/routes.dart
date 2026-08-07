@@ -1,8 +1,7 @@
 class MySocRoutes {
-  static const signupRoute = '/signup';
-  static const loginRoute = '/login';
-  static const homeRoute = '/home';
-  static const emailVerify = '/emailverify';
+  // static const signupRoute = '/signup';
+  // static const loginRoute = '/login';
+  static const userDashboard = '/userdash';
   static const buildingForm = '/buildingForm';
   static const userForm = '/userForm';
   static const chooserPage = '/choose';
@@ -35,7 +34,12 @@ class MySocRoutes {
   static const createPolls = '/createPolls';
   static const vehiclesTracking = '/vehiclesTracking';
 
-  // For UI Testing Purposes
-  static const testing = '/test';
-  static const testlogin = 'test_login';
+  // For UI Testing puposes
+  static const test = '/testing';
+
+  // For UI Confirmed Purposes
+  static const homeRoute = '/home';
+  static const loginRoute = '/login';
+  static const signupRoute = '/signup';
+  static const emailVerify = '/emailverify';
 }

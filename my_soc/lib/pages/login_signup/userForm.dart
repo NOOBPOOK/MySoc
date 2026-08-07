@@ -213,7 +213,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.red,
               ),
-              child: Text('Remove Photo'),
+              child: Text('Remove'),
             ),
           ),
       ],

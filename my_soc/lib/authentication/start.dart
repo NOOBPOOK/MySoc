@@ -51,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                       child: GestureDetector(
                     onTap: () {
                       context.pushNamedTransition(
-                          routeName: MySocRoutes.testlogin,
+                          routeName: MySocRoutes.loginRoute,
                           duration: Duration(milliseconds: 500),
                           type: PageTransitionType.bottomToTopJoined,
                           cc: HomeScreen());
