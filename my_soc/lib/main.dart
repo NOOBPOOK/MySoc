@@ -27,8 +27,8 @@ import 'package:my_soc/pages/secretary/viewLogs.dart';
 import 'package:my_soc/pages/secretary/view_maintain.dart';
 import 'package:my_soc/pages/secretary/view_permissions.dart';
 import 'package:my_soc/pages/secretary/watchman.dart';
-import 'package:my_soc/pages/watchman/home_watch.dart';
-import 'package:my_soc/pages/watchman/login.dart';
+import 'package:my_soc/pages/watchman/watch_home.dart';
+import 'package:my_soc/pages/watchman/watch_login.dart';
 import 'package:my_soc/practice/maps.dart';
 import 'package:my_soc/practice/practice_images.dart';
 import 'package:my_soc/pages/secretary/add_complaints.dart';
@@ -47,6 +47,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_soc/authentication/login.dart';
 import 'package:my_soc/authentication/start.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   // Load the .env file
@@ -71,7 +72,11 @@ void main() async {
     ),
   );
 
-  runApp(MyApp());
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

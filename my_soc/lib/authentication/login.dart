@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_soc/authentication/forgotPassord.dart';
 import 'package:my_soc/authentication/signup.dart';
+import 'package:my_soc/pages/watchman/watch_login.dart';
 import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -23,6 +24,17 @@ class _LoginState extends State<Login> {
   final TextEditingController username = TextEditingController();
   final TextEditingController passwd = TextEditingController();
   final _formkey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if user is already signed in
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.pushReplacementNamed(context, MySocRoutes.userDashboard);
+      }
+    });
+  }
 
   @override
   // Backend: Disposes form controllers when the page is removed.
@@ -48,8 +60,7 @@ class _LoginState extends State<Login> {
 
   // Backend: Initializes the Google Sign-In client once for this page.
   Future<void> _ensureGoogleSignInInitialized() {
-    return _googleSignInInitialization ??=
-        GoogleSignIn.instance.initialize();
+    return _googleSignInInitialization ??= GoogleSignIn.instance.initialize();
   }
 
   // Backend: Shows an error message to the user using a snackbar.
@@ -83,8 +94,7 @@ class _LoginState extends State<Login> {
 
         final GoogleSignInAccount googleUser =
             await GoogleSignIn.instance.authenticate();
-        final GoogleSignInAuthentication googleAuth =
-            googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
         final String? idToken = googleAuth.idToken;
 
         if (idToken == null) {
@@ -406,6 +416,41 @@ class _LoginState extends State<Login> {
     );
   }
 
+  // UI: Employee sign in navigation link.
+  Widget _buildEmployeeSigninLink() {
+    return Align(
+      alignment: Alignment.center,
+      child: Text.rich(
+        TextSpan(
+          text: "Looking for Employee Sign In? ",
+          style: TextStyle(
+            fontFamily: "Poppins",
+            color: Color.fromARGB(255, 193, 193, 193),
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          ),
+          children: [
+            TextSpan(
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WatchmanLogin()),
+                  );
+                },
+              text: "Click Here",
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // UI: Grouped action section for buttons and signup link.
   Widget _buildActionSection() {
     return Padding(
@@ -423,6 +468,8 @@ class _LoginState extends State<Login> {
             _buildGoogleLoginButton(),
             SizedBox(height: 10),
             _buildSignupLink(),
+            SizedBox(height: 10),
+            _buildEmployeeSigninLink(),
           ],
         ),
       ),
