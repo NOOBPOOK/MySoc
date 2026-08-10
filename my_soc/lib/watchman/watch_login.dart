@@ -63,6 +63,7 @@ class _WatchmanLoginState extends ConsumerState<WatchmanLogin> {
           watchName: jwt.payload['watchmanName'],
           watchId: jwt.payload['watchmanId'],
           buildId: jwt.payload['buildId'].toString(),
+          buildName: jwt.payload['buildName'] ?? "Building",
           wings: jwt.payload['wings'] ?? [],
         );
         logger.i('WatchmanLogin: _loadStoredValue successful, navigating to home');
@@ -205,6 +206,7 @@ class _WatchmanLoginState extends ConsumerState<WatchmanLogin> {
               'watchmanId': watchman['id'],
               'password': _passwordController.text.trim(),
               'buildId': _buildingId.text.trim(),
+              'buildName': building['buildingName'] ?? "Building",
               'wings': building['wings'],
             });
 
@@ -221,6 +223,7 @@ class _WatchmanLoginState extends ConsumerState<WatchmanLogin> {
                 watchName: watch_details['name'],
                 watchId: watch_details['id'],
                 buildId: building.id,
+                buildName: building['buildingName'] ?? "Building",
                 wings: building['wings'] ?? [],
               );
               logger.i('WatchmanLogin: _login delayed navigation successful');

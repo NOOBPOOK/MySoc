@@ -7,12 +7,14 @@ class WatchmanState {
   final String watchName;
   final String watchId;
   final String buildId;
+  final String buildName;
   final List wings;
 
   WatchmanState({
     required this.watchName,
     required this.watchId,
     required this.buildId,
+    required this.buildName,
     required this.wings,
   });
 
@@ -21,12 +23,14 @@ class WatchmanState {
     String? watchName,
     String? watchId,
     String? buildId,
+    String? buildName,
     List? wings,
   }) {
     return WatchmanState(
       watchName: watchName ?? this.watchName,
       watchId: watchId ?? this.watchId,
       buildId: buildId ?? this.buildId,
+      buildName: buildName ?? this.buildName,
       wings: wings ?? this.wings,
     );
   }
@@ -41,14 +45,16 @@ class WatchmanNotifier extends StateNotifier<WatchmanState?> {
     required String watchName,
     required String watchId,
     required String buildId,
+    required String buildName,
     required List wings,
   }) {
     logger.i(
-        'setWatchmanData called with watchName: $watchName, watchId: $watchId, buildId: $buildId');
+        'setWatchmanData called with watchName: $watchName, watchId: $watchId, buildId: $buildId, buildName: $buildName');
     state = WatchmanState(
       watchName: watchName,
       watchId: watchId,
       buildId: buildId,
+      buildName: buildName,
       wings: wings,
     );
     logger.i('setWatchmanData completed successfully');
@@ -78,6 +84,7 @@ final watchmanLogsProvider = StreamProvider.autoDispose<QuerySnapshot>((ref) {
       .collection('buildings')
       .doc(watchmanState.buildId)
       .collection('logs')
+      .orderBy('timestamp', descending: true)
       // For debugging purposes
       // .where('timestamp', isGreaterThan: prev)
       .snapshots();

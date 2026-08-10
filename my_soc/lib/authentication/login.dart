@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_soc/authentication/forgotPassord.dart';
 import 'package:my_soc/authentication/signup.dart';
-import 'package:my_soc/pages/watchman/watch_login.dart';
+import 'package:my_soc/watchman/watch_login.dart';
 import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 
