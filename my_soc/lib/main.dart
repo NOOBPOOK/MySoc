@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:my_soc/admin/admin_dashboard.dart';
-import 'package:my_soc/admin/admin_payments.dart';
-import 'package:my_soc/admin/admin_verification.dart';
-import 'package:my_soc/admin/admin_login_page.dart';
-import 'package:my_soc/admin/map_build.dart';
+import 'package:my_soc/common/polls.dart';
+import 'package:my_soc/common/create_polls.dart';
+import 'package:my_soc/admin/admin_home.dart';
+import 'package:my_soc/admin/admin_payments_view.dart';
+import 'package:my_soc/admin/admin_maps_view.dart';
 import 'package:my_soc/authentication/emailVerify.dart';
 import 'package:my_soc/authentication/signup.dart';
 import 'package:my_soc/firebase_options.dart';
@@ -131,8 +131,7 @@ class MyApp extends StatelessWidget {
           MySocRoutes.addServices: (context) => AddServices(),
           MySocRoutes.complaints: (context) => ComplaintsPage(),
           MySocRoutes.addComplaints: (context) => AddComplaints(),
-          MySocRoutes.adminDashboard: (context) => AdminDashboard(),
-          MySocRoutes.adminLogin: (context) => AdminLoginPage(),
+
           MySocRoutes.adminHome: (context) => AdminHome(),
           MySocRoutes.announcements: (context) => AnnouncementsPage(),
           MySocRoutes.penalties: (context) => PenaltiesPage(),
@@ -140,9 +139,9 @@ class MyApp extends StatelessWidget {
           MySocRoutes.watchmanLogin: (context) => WatchmanLogin(),
           MySocRoutes.watchmanHome: (context) => WatchmanHome(),
           MySocRoutes.viewRecordsCourriers: (context) => ViewRecordsCourriers(),
-          MySocRoutes.buildingMaps: (context) => BuildingMaps(),
+          MySocRoutes.adminMaps: (context) => const AdminMapsView(),
           MySocRoutes.formMaps: (context) => ChooseLocation(),
-          MySocRoutes.adminPayments: (context) => AdminPayments(),
+          MySocRoutes.adminPayments: (context) => const AdminPaymentsView(),
           MySocRoutes.generatePDF: (context) => CreateMaintain(),
           MySocRoutes.viewMainatainenanceJob: (context) =>
               ViewMainatainenanceJob(),
@@ -150,6 +149,8 @@ class MyApp extends StatelessWidget {
           MySocRoutes.permissions: (context) => PermissionsPage(),
           MySocRoutes.viewPermissions: (context) => ViewPermissionsPage(),
           MySocRoutes.polls: (context) => ViewPollsPage(),
+          MySocRoutes.userPolls: (context) => const UserPollsPage(),
+          MySocRoutes.userCreatePolls: (context) => const UserCreatePollsPage(),
           MySocRoutes.vehiclesTracking: (context) => VehicleTrackingPage(),
           MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
           MySocRoutes.Maintain: (context) => Maintain(),

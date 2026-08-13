@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:my_soc/authentication/login.dart';
+import 'package:my_soc/common/vehicle_registry.dart';
 import 'package:my_soc/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -431,13 +432,22 @@ class _UserHomeState extends State<UserHome> {
           },
         ),
         _buildGridButton(
-          icon: Icons.poll,
-          color: Color(0xFF6A5ACD),
-          label: 'Polls',
+          icon: Icons.how_to_vote,
+          color: Colors.indigo,
+          label: 'Community Polls',
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.polls, arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
+            // ARCHITECTURE NOTE:
+            // We pass these 4 basic string fields via context arguments instead of establishing
+            // a new Riverpod watch method in the destination page. Passing simple primitives like
+            // IDs and names through routing is instantaneous, consumes virtually zero memory,
+            // and entirely avoids setting up a new asynchronous Stream/FutureProvider listener
+            // lifecycle which would cause UI jitter.
+            Navigator.pushNamed(context, MySocRoutes.userPolls, arguments: {
+              'userId': userDetails.id,
+              'firstName': userDetails['firstName'],
+              'lastName': userDetails['lastName'],
+              'buildingId': buildingDetails.id,
+              'designation': userDetails['designation'],
             });
           },
         ),
@@ -462,6 +472,21 @@ class _UserHomeState extends State<UserHome> {
                   'userDetails': userDetails,
                   'buildingDetails': buildingDetails,
                 });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.directions_car,
+          color: Color(0xFF2E8B57), // SeaGreen
+          label: 'Vehicle Registry',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VehicleRegistryPage(
+                  buildingId: buildingDetails.id,
+                ),
+              ),
+            );
           },
         ),
       ],

@@ -22,7 +22,7 @@ class MySocRoutes {
   static const watchmanLogin = '/watchmanLogin';
   static const watchmanHome = '/watchmanHome';
   static const viewRecordsCourriers = '/viewRecords';
-  static const buildingMaps = '/buildingMaps';
+  static const adminMaps = '/adminMaps';
   static const formMaps = '/chooseLocation';
   static const generatePDF = '/generatePDF';
   static const viewMainatainenanceJob = '/viewMainatainenanceJob';
@@ -31,6 +31,8 @@ class MySocRoutes {
   static const permissions = '/permissions';
   static const viewPermissions = '/viewPermissions';
   static const polls = '/polls';
+  static const userPolls = '/userPolls';
+  static const userCreatePolls = '/userCreatePolls';
   static const createPolls = '/createPolls';
   static const vehiclesTracking = '/vehiclesTracking';
 
