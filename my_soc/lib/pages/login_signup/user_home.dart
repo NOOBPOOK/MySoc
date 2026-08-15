@@ -24,6 +24,10 @@ class _UserHomeState extends State<UserHome> {
       FlutterLocalNotificationsPlugin();
   late NotificationDetails platformChannelSpecifics;
 
+  String capitalize(String s) => s.isNotEmpty
+      ? '${s[0].toUpperCase()}${s.substring(1).toLowerCase()}'
+      : '';
+
   @override
   void initState() {
     super.initState();
@@ -330,24 +334,20 @@ class _UserHomeState extends State<UserHome> {
           },
         ),
         _buildGridButton(
-          label: "Complaints",
-          icon: Icons.feedback,
-          color: Color(0xFFFF6347),
-          onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.complaints, arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
-            });
-          },
-        ),
-        _buildGridButton(
           label: "Announcements",
           icon: Icons.announcement,
           color: Color(0xFF9370DB),
           onPressed: () {
+            String fName =
+                capitalize(userDetails['firstName']?.toString().trim() ?? '');
+            String lName =
+                capitalize(userDetails['lastName']?.toString().trim() ?? '');
+
             Navigator.pushNamed(context, MySocRoutes.announcements, arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
+              'userId': userDetails.id,
+              'userName': '$fName $lName'.trim(),
+              'buildingId': buildingDetails.id,
+              'designation': userDetails['designation'],
             });
           },
         ),
@@ -456,21 +456,13 @@ class _UserHomeState extends State<UserHome> {
           color: Color(0xFF6A5ACD),
           label: 'Create Polls',
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.createPolls, arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
-            });
-          },
-        ),
-        _buildGridButton(
-          icon: Icons.create,
-          color: Color(0xFF6A5ACD),
-          label: 'Vehicles Tracking',
-          onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.vehiclesTracking,
+            Navigator.pushNamed(context, MySocRoutes.userCreatePolls,
                 arguments: {
-                  'userDetails': userDetails,
-                  'buildingDetails': buildingDetails,
+                  'userId': userDetails.id,
+                  'firstName': userDetails['firstName'],
+                  'lastName': userDetails['lastName'],
+                  'buildingId': buildingDetails.id,
+                  'designation': userDetails['designation'],
                 });
           },
         ),
@@ -487,6 +479,27 @@ class _UserHomeState extends State<UserHome> {
                 ),
               ),
             );
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.report_problem,
+          color: Colors.redAccent,
+          label: 'Complaints',
+          onPressed: () {
+            String fName =
+                capitalize(userDetails['firstName']?.toString().trim() ?? '');
+            String lName =
+                capitalize(userDetails['lastName']?.toString().trim() ?? '');
+
+            Navigator.pushNamed(context, MySocRoutes.userComplaints,
+                arguments: {
+                  'userId': userDetails.id,
+                  'ownerName': '$fName $lName'.trim(),
+                  'buildingId': buildingDetails.id,
+                  'flatNumber':
+                      '${userDetails['wing']} - ${userDetails['flatNumber']}',
+                  'designation': userDetails['designation'],
+                });
           },
         ),
       ],

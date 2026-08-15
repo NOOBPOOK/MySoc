@@ -85,7 +85,8 @@ class _BuildingDetailsPageState extends ConsumerState<BuildingDetailsPage> {
                   Navigator.pop(context);
                   await _rejectBuilding();
                 } else {
-                  CustomToast.show(context, type: -1, message: 'Please enter rejection remarks.');
+                  CustomToast.show(context,
+                      type: -1, message: 'Please enter rejection remarks.');
                 }
               },
               icon: const Icon(Icons.close),
@@ -154,20 +155,24 @@ class _BuildingDetailsPageState extends ConsumerState<BuildingDetailsPage> {
       final toEmail = _buildingData?['email'];
       final buildingName = _buildingData?['buildingName'] ?? 'Unknown Building';
       if (toEmail != null && toEmail.isNotEmpty) {
-        Future.microtask(() => EmailService.instance.sendBuildingApprovalEmail(
+        Future.microtask(() => EmailService.instance
+                .sendBuildingApprovalEmail(
               toEmail: toEmail,
               buildingName: buildingName,
-            ).catchError((e) {
+            )
+                .catchError((e) {
               print('Non-blocking email error: $e');
             }));
       }
 
       if (mounted) {
-        CustomToast.show(context, type: 1, message: 'Building successfully verified.');
+        CustomToast.show(context,
+            type: 1, message: 'Building successfully verified.');
       }
     } catch (e) {
       if (mounted) {
-        CustomToast.show(context, type: -1, message: 'Error verifying building: $e');
+        CustomToast.show(context,
+            type: -1, message: 'Error verifying building: $e');
       }
     }
   }
@@ -188,21 +193,25 @@ class _BuildingDetailsPageState extends ConsumerState<BuildingDetailsPage> {
       final toEmail = _buildingData?['email'];
       final buildingName = _buildingData?['buildingName'] ?? 'Unknown Building';
       if (toEmail != null && toEmail.isNotEmpty) {
-        Future.microtask(() => EmailService.instance.sendBuildingRejectionEmail(
+        Future.microtask(() => EmailService.instance
+                .sendBuildingRejectionEmail(
               toEmail: toEmail,
               buildingName: buildingName,
               remark: remarkController.text,
-            ).catchError((e) {
+            )
+                .catchError((e) {
               print('Non-blocking email error: $e');
             }));
       }
 
       if (mounted) {
-        CustomToast.show(context, type: 1, message: 'Building has been rejected.');
+        CustomToast.show(context,
+            type: 1, message: 'Building has been rejected.');
       }
     } catch (e) {
       if (mounted) {
-        CustomToast.show(context, type: -1, message: 'Error rejecting building: $e');
+        CustomToast.show(context,
+            type: -1, message: 'Error rejecting building: $e');
       }
     }
   }
@@ -1063,10 +1072,10 @@ class FullScreenImageViewer extends StatelessWidget {
   final String tag;
 
   const FullScreenImageViewer({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.tag,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -9,13 +9,12 @@ class MySocRoutes {
   static const secDashboardUserDetails = '/secDashboardUserDetails';
   static const secRoleBasedAccess = '/secRoleBasedAccess';
   static const addServices = '/addServices';
-  static const complaints = '/complaints';
-  static const addComplaints = '/addComplaints';
   static const adminLogin = '/adminLogin';
   static const adminHome = '/adminHome';
   static const adminPayments = '/adminPayments';
   static const adminDashboard = '/adminDashboard';
   static const announcements = '/announcements';
+  static const createAnnouncements = '/createAnnouncements';
   static const penalties = '/penalties';
   static const createWatchman = '/createWatchman';
   static const viewWatchman = '/viewWatchman';
@@ -30,11 +29,10 @@ class MySocRoutes {
   static const Maintain = '/maintain';
   static const permissions = '/permissions';
   static const viewPermissions = '/viewPermissions';
-  static const polls = '/polls';
   static const userPolls = '/userPolls';
   static const userCreatePolls = '/userCreatePolls';
-  static const createPolls = '/createPolls';
-  static const vehiclesTracking = '/vehiclesTracking';
+  static const pollVotes = '/pollVotes';
+  static const userComplaints = '/userComplaints';
 
   // For UI Testing puposes
   static const test = '/testing';
