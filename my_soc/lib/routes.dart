@@ -33,6 +33,8 @@ class MySocRoutes {
   static const userCreatePolls = '/userCreatePolls';
   static const pollVotes = '/pollVotes';
   static const userComplaints = '/userComplaints';
+  static const manageUsers = '/manageUsers';
+  static const userDetails = '/userDetails';
 
   // For UI Testing puposes
   static const test = '/testing';

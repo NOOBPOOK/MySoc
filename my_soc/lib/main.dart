@@ -18,6 +18,8 @@ import 'package:my_soc/pages/login_signup/chooseMap.dart';
 import 'package:my_soc/pages/login_signup/chooser.dart';
 import 'package:my_soc/common/announcements/announce.dart';
 import 'package:my_soc/common/announcements/create_announce.dart';
+import 'package:my_soc/common/verification/usersView.dart';
+import 'package:my_soc/common/verification/userDetails.dart';
 import 'package:my_soc/pages/secretary/create_watchman.dart';
 import 'package:my_soc/pages/secretary/generate_maintain.dart';
 import 'package:my_soc/pages/secretary/maintain.dart';
@@ -149,6 +151,8 @@ class MyApp extends StatelessWidget {
           MySocRoutes.userCreatePolls: (context) => const UserCreatePollsPage(),
           MySocRoutes.pollVotes: (context) => const PollVotesPage(),
           MySocRoutes.userComplaints: (context) => const ComplaintsPage(),
+          MySocRoutes.manageUsers: (context) => const ManageUsersPage(),
+          MySocRoutes.userDetails: (context) => const UserDetailsPage(),
           MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
           MySocRoutes.Maintain: (context) => Maintain(),
 

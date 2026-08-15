@@ -189,3 +189,23 @@ final announcementsStreamProvider =
       .orderBy('createdAt', descending: true)
       .snapshots();
 });
+
+// Backend: Provides a live stream of users for a specific building.
+final buildingUsersStreamProvider =
+    StreamProvider.family<QuerySnapshot, String>((ref, buildingId) {
+  logger.i(
+      'buildingUsersStreamProvider: Opened users stream for building $buildingId');
+  return FirebaseFirestore.instance
+      .collection('users')
+      .where('buildingId', isEqualTo: buildingId)
+      .snapshots();
+});
+
+// Backend: Provides a live stream for a specific user document using their ID.
+final userDocumentStreamProvider = StreamProvider.autoDispose.family<DocumentSnapshot, String>((ref, userId) {
+  logger.i('userDocumentStreamProvider: Opened stream for user $userId');
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .snapshots();
+});

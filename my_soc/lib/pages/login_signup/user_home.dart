@@ -299,9 +299,27 @@ class _UserHomeState extends State<UserHome> {
           },
         ),
         _buildGridButton(
+          label: "Manage Users",
+          icon: Icons.supervised_user_circle,
+          color: const Color(0xFF1E90FF),
+          onPressed: () {
+            String fName =
+                capitalize(userDetails['firstName']?.toString().trim() ?? '');
+            String lName =
+                capitalize(userDetails['lastName']?.toString().trim() ?? '');
+
+            Navigator.pushNamed(context, MySocRoutes.manageUsers, arguments: {
+              'userId': userDetails.id,
+              'userName': '$fName $lName'.trim(),
+              'buildingId': buildingDetails.id,
+              'designation': userDetails['designation'],
+            });
+          },
+        ),
+        _buildGridButton(
           label: "Secretary Dashboard",
           icon: Icons.dashboard,
-          color: Color(0xFF1E90FF),
+          color: const Color(0xFF1E90FF),
           onPressed: () {
             Navigator.pushNamed(context, MySocRoutes.secDashboardUsers,
                 arguments: {
