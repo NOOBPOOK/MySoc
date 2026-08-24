@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_soc/utils/app_logger.dart';
 import 'package:my_soc/providers/user_provider.dart';
-import 'package:my_soc/routes.dart';
-
 class ManageUsersPage extends ConsumerStatefulWidget {
   const ManageUsersPage({super.key});
 
@@ -215,7 +213,7 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
           onTap: () {
             Navigator.pushNamed(
               context,
-              MySocRoutes.userDetails,
+              '/userDetails',
               arguments: {
                 'userId': user['id'],
                 'loggedInUserId': userId,

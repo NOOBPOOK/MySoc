@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:my_soc/routes.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_soc/widgets/custom_toast.dart';
@@ -67,7 +66,7 @@ class _WatchmanLoginState extends ConsumerState<WatchmanLogin> {
           wings: jwt.payload['wings'] ?? [],
         );
         logger.i('WatchmanLogin: _loadStoredValue successful, navigating to home');
-        Navigator.pushReplacementNamed(context, MySocRoutes.watchmanHome);
+        Navigator.pushReplacementNamed(context, '/watchmanHome');
         return;
       } catch (e) {
         CustomToast.show(context, type: -1, message: '$e');
@@ -227,7 +226,7 @@ class _WatchmanLoginState extends ConsumerState<WatchmanLogin> {
                 wings: building['wings'] ?? [],
               );
               logger.i('WatchmanLogin: _login delayed navigation successful');
-              Navigator.pushReplacementNamed(context, MySocRoutes.watchmanHome);
+              Navigator.pushReplacementNamed(context, '/watchmanHome');
             });
 
             // throw Exception("You have logged in Succesfully");

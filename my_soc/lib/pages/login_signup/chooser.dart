@@ -3,8 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_soc/authentication/login.dart';
-import 'package:my_soc/routes.dart';
-
 class ChooserPage extends StatelessWidget {
   const ChooserPage({super.key});
 
@@ -39,7 +37,7 @@ class ChooserPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       await Navigator.pushNamed(
-                          context, MySocRoutes.buildingForm);
+                          context, '/buildingForm');
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -63,7 +61,7 @@ class ChooserPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      await Navigator.pushNamed(context, MySocRoutes.userForm);
+                      await Navigator.pushNamed(context, '/userForm');
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(

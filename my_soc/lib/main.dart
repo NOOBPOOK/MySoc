@@ -23,7 +23,8 @@ import 'package:my_soc/common/verification/userDetails.dart';
 import 'package:my_soc/pages/secretary/create_watchman.dart';
 import 'package:my_soc/pages/secretary/generate_maintain.dart';
 import 'package:my_soc/pages/secretary/maintain.dart';
-import 'package:my_soc/pages/secretary/penalties.dart';
+import 'package:my_soc/common/penalties/manage_pens.dart';
+import 'package:my_soc/common/penalties/detail_pens.dart';
 import 'package:my_soc/pages/secretary/permissions_page.dart';
 import 'package:my_soc/pages/secretary/viewLogs.dart';
 import 'package:my_soc/pages/secretary/view_maintain.dart';
@@ -33,15 +34,13 @@ import 'package:my_soc/watchman/watch_home.dart';
 import 'package:my_soc/watchman/watch_login.dart';
 import 'package:my_soc/practice/maps.dart';
 import 'package:my_soc/practice/practice_images.dart';
-import 'package:my_soc/pages/secretary/services_add.dart';
-import 'package:my_soc/pages/secretary/role_access.dart';
-import 'package:my_soc/pages/secretary/sec_building_users.dart';
+import 'package:my_soc/common/members/assign_roles.dart';
+import 'package:my_soc/common/members/kysociety.dart';
 import 'package:my_soc/pages/login_signup/signup.dart';
 import 'package:my_soc/pages/login_signup/userForm.dart';
 import 'package:my_soc/pages/login_signup/user_home.dart';
 import 'package:my_soc/pages/login_signup/verify_email.dart';
 import 'package:my_soc/practice/practice.dart';
-import 'package:my_soc/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_soc/authentication/login.dart';
@@ -110,60 +109,56 @@ class MyApp extends StatelessWidget {
         ),
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
-        // initialRoute: MySocRoutes.signupRoute,
+        // initialRoute: '/signup',
         // initialRoute:
         // MySocRoutes.testing, // Set the initial route to the login page
         // home: SafeArea(child: userExists ? UserHome() : LoginPage()),
         home: Login(),
         routes: {
-          // MySocRoutes.signupRoute: (context) => const SignupPage(),
-          // MySocRoutes.loginRoute: (context) => const LoginPage(),
-          // MySocRoutes.emailVerify: (context) => const Emailverify(),
-          MySocRoutes.userDashboard: (context) => const UserHome(),
-          MySocRoutes.buildingForm: (context) =>
-              const BuildingRegistrationPage(),
-          MySocRoutes.userForm: (context) => UserRegistrationPage(),
-          MySocRoutes.chooserPage: (context) => const ChooserPage(),
-          MySocRoutes.secDashboardUsers: (context) => SecDashboardUsers(),
-          MySocRoutes.secDashboardUserDetails: (context) =>
-              SecDashboardUserDetails(),
-          MySocRoutes.secRoleBasedAccess: (context) => RoleAccessPage(),
-          MySocRoutes.addServices: (context) => AddServices(),
+          // '/signup': (context) => const SignupPage(),
+          // '/login': (context) => const LoginPage(),
+          // '/emailverify': (context) => const Emailverify(),
+          '/userdash': (context) => const UserHome(),
+          '/buildingForm': (context) => const BuildingRegistrationPage(),
+          '/userForm': (context) => UserRegistrationPage(),
+          '/choose': (context) => const ChooserPage(),
+          '/kySociety': (context) => const KySocietyPage(),
+          '/secRoleBasedAccess': (context) => const AssignRolesPage(),
 
-          MySocRoutes.adminHome: (context) => AdminHome(),
-          MySocRoutes.announcements: (context) => AnnouncementsPage(),
-          MySocRoutes.createAnnouncements: (context) => const CreateAnnouncementPage(),
-          MySocRoutes.penalties: (context) => PenaltiesPage(),
-          MySocRoutes.viewWatchman: (context) => WatchmanPage(),
-          MySocRoutes.watchmanLogin: (context) => WatchmanLogin(),
-          MySocRoutes.watchmanHome: (context) => WatchmanHome(),
-          MySocRoutes.viewRecordsCourriers: (context) => ViewRecordsCourriers(),
-          MySocRoutes.adminMaps: (context) => const AdminMapsView(),
-          MySocRoutes.formMaps: (context) => ChooseLocation(),
-          MySocRoutes.adminPayments: (context) => const AdminPaymentsView(),
-          MySocRoutes.generatePDF: (context) => CreateMaintain(),
-          MySocRoutes.viewMainatainenanceJob: (context) =>
-              ViewMainatainenanceJob(),
-          //MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
-          MySocRoutes.permissions: (context) => PermissionsPage(),
-          MySocRoutes.viewPermissions: (context) => ViewPermissionsPage(),
-          MySocRoutes.userPolls: (context) => const UserPollsPage(),
-          MySocRoutes.userCreatePolls: (context) => const UserCreatePollsPage(),
-          MySocRoutes.pollVotes: (context) => const PollVotesPage(),
-          MySocRoutes.userComplaints: (context) => const ComplaintsPage(),
-          MySocRoutes.manageUsers: (context) => const ManageUsersPage(),
-          MySocRoutes.userDetails: (context) => const UserDetailsPage(),
-          MySocRoutes.viewDocDetails: (context) => ViewAllDocDetails(),
-          MySocRoutes.Maintain: (context) => Maintain(),
+          '/adminHome': (context) => AdminHome(),
+          '/announcements': (context) => AnnouncementsPage(),
+          '/createAnnouncements': (context) => const CreateAnnouncementPage(),
+          '/penalties': (context) => const IssuePenaltyPage(),
+          '/viewWatchman': (context) => WatchmanPage(),
+          '/watchmanLogin': (context) => WatchmanLogin(),
+          '/watchmanHome': (context) => WatchmanHome(),
+          '/viewRecords': (context) => ViewRecordsCourriers(),
+          '/adminMaps': (context) => const AdminMapsView(),
+          '/chooseLocation': (context) => ChooseLocation(),
+          '/adminPayments': (context) => const AdminPaymentsView(),
+          '/generatePDF': (context) => CreateMaintain(),
+          '/viewMainatainenanceJob': (context) => ViewMainatainenanceJob(),
+          //'/viewDocDetails': (context) => ViewAllDocDetails(),
+          '/permissions': (context) => PermissionsPage(),
+          '/viewPermissions': (context) => ViewPermissionsPage(),
+          '/userPolls': (context) => const UserPollsPage(),
+          '/userCreatePolls': (context) => const UserCreatePollsPage(),
+          '/pollVotes': (context) => const PollVotesPage(),
+          '/userComplaints': (context) => const ComplaintsPage(),
+          '/manageUsers': (context) => const ManageUsersPage(),
+          '/userDetails': (context) => const UserDetailsPage(),
+          '/viewDocDetails': (context) => ViewAllDocDetails(),
+          '/maintain': (context) => Maintain(),
+          '/penaltyDetails': (context) => const PenaltyDetailsPage(),
 
           // For testing UI we will use this route
-          MySocRoutes.homeRoute: (context) => HomeScreen(),
-          MySocRoutes.loginRoute: (context) => Login(),
-          MySocRoutes.signupRoute: (context) => Signup(),
-          MySocRoutes.emailVerify: (context) => const Emailverify(),
+          '/home': (context) => HomeScreen(),
+          '/login': (context) => Login(),
+          '/signup': (context) => Signup(),
+          '/emailverify': (context) => const Emailverify(),
 
           // Currently testing route
-          MySocRoutes.test: (context) => Signup(),
+          '/testing': (context) => Signup(),
         });
   }
 }

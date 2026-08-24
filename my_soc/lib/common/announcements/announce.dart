@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_soc/utils/app_logger.dart';
-import 'package:my_soc/routes.dart';
 import 'package:my_soc/providers/user_provider.dart';
 
 class AnnouncementsPage extends ConsumerStatefulWidget {
@@ -149,6 +148,7 @@ class _AnnouncementsPageState extends ConsumerState<AnnouncementsPage> {
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: const Color(0xFFF7F2FA),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -242,7 +242,7 @@ class _AnnouncementsPageState extends ConsumerState<AnnouncementsPage> {
               padding: const EdgeInsets.only(right: 6.0, bottom: 8.0),
               child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, MySocRoutes.createAnnouncements,
+                  Navigator.pushNamed(context, '/createAnnouncements',
                       arguments: {
                         'userId': userId,
                         'userName': userName,

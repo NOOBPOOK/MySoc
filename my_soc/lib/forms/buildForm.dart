@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:my_soc/routes.dart';
 import 'dart:math';
 import 'package:my_soc/widgets/progressBar.dart';
 import 'package:my_soc/widgets/uploadButton.dart';
@@ -737,7 +736,7 @@ class _BuildformState extends State<Buildform> {
                         print("Hello");
                         LatLng chosenLocation =
                             await context.pushNamedTransition(
-                          routeName: MySocRoutes.formMaps,
+                          routeName: '/chooseLocation',
                           type: PageTransitionType.fade,
                           duration: Duration(milliseconds: 500),
                         );

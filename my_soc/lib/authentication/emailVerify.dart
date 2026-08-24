@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:my_soc/pages/login_signup/chooser.dart';
-import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
 
@@ -47,7 +46,7 @@ class _EmailverifyState extends State<Emailverify> {
               return route.settings.name == '/home';
             });
       });
-      // await Navigator.popAndPushNamed(context, MySocRoutes.chooserPage);
+      // await Navigator.popAndPushNamed(context, '/choose');
       setState(() {});
     }
   }
@@ -62,7 +61,7 @@ class _EmailverifyState extends State<Emailverify> {
     } on FirebaseAuthException catch (e) {
       print(e.toString());
       await FirebaseAuth.instance.signOut();
-      // await Navigator.pushNamed(context, MySocRoutes.signupRoute);
+      // await Navigator.pushNamed(context, '/signup');
     }
   }
 
@@ -182,10 +181,10 @@ class _EmailverifyState extends State<Emailverify> {
                       // Signout the user
                       try {
                         FirebaseAuth.instance.signOut();
-                        Navigator.pushNamed(context, MySocRoutes.loginRoute);
+                        Navigator.pushNamed(context, '/login');
 
                         context.pushNamedTransition(
-                            routeName: MySocRoutes.loginRoute,
+                            routeName: '/login',
                             type: PageTransitionType.fade,
                             duration: Duration(milliseconds: 200));
                       } catch (e) {

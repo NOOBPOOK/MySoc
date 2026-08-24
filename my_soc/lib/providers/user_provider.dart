@@ -201,11 +201,68 @@ final buildingUsersStreamProvider =
       .snapshots();
 });
 
+// Backend: Provides a live stream of verified users for a specific building.
+final verifiedBuildingUsersStreamProvider =
+    StreamProvider.family<QuerySnapshot, String>((ref, buildingId) {
+  logger.i(
+      'verifiedBuildingUsersStreamProvider: Opened verified users stream for building $buildingId');
+  return FirebaseFirestore.instance
+      .collection('users')
+      .where('buildingId', isEqualTo: buildingId)
+      .where('isVerified', isEqualTo: true)
+      .snapshots();
+});
+
 // Backend: Provides a live stream for a specific user document using their ID.
 final userDocumentStreamProvider = StreamProvider.autoDispose.family<DocumentSnapshot, String>((ref, userId) {
   logger.i('userDocumentStreamProvider: Opened stream for user $userId');
   return FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
+      .snapshots();
+});
+
+// Backend: Provides all verified users in a given building as a Future (one-time fetch).
+final verifiedBuildingUsersFutureProvider = FutureProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>((ref, buildingId) async {
+  logger.i(
+      'verifiedBuildingUsersFutureProvider: Fetching verified users for building $buildingId one time');
+  try {
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('buildingId', isEqualTo: buildingId)
+        .where('isVerified', isEqualTo: true)
+        .get();
+
+    final users = snapshot.docs.map((doc) {
+      return {
+        'id': doc.id,
+        ...doc.data() as Map<String, dynamic>
+      };
+    }).toList();
+
+    logger.i(
+        'verifiedBuildingUsersFutureProvider: Successfully fetched ${users.length} verified users');
+    return users;
+  } catch (e) {
+    logger.e('verifiedBuildingUsersFutureProvider: Error fetching verified users - $e');
+    rethrow;
+  }
+});
+
+// Backend: Provides a live stream of penalties for a specific user in a building.
+// Parameter format: "buildingId_userId"
+final userPenaltiesStreamProvider = StreamProvider.autoDispose
+    .family<QuerySnapshot, String>((ref, param) {
+  final parts = param.split('_');
+  final buildingId = parts.isNotEmpty ? parts[0] : '';
+  final userId = parts.length > 1 ? parts[1] : '';
+  logger.i(
+      'userPenaltiesStreamProvider: Opened penalties stream for building $buildingId, user $userId');
+  return FirebaseFirestore.instance
+      .collection('buildings')
+      .doc(buildingId)
+      .collection('penalties')
+      .where('residentId', isEqualTo: userId)
       .snapshots();
 });

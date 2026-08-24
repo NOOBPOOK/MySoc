@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:my_soc/routes.dart';
-
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -32,7 +30,7 @@ class _SignupPageState extends State<SignupPage> {
       print("Created user account");
 
       await Future.delayed(const Duration(seconds: 3));
-      await Navigator.pushNamed(context, MySocRoutes.emailVerify);
+      await Navigator.pushNamed(context, '/emailverify');
     } on FirebaseAuthException catch (e) {
       customMsg = e.message.toString();
       setState(() {});
@@ -291,7 +289,7 @@ class _SignupPageState extends State<SignupPage> {
                           TextButton(
                             onPressed: () {
                               Navigator.pushNamed(
-                                  context, MySocRoutes.loginRoute);
+                                  context, '/login');
                             },
                             child: const Text(
                               "Already have an account? Login",

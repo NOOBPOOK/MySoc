@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:cloudinary/cloudinary.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:my_soc/pages/login_signup/chooseMap.dart';
-import 'package:my_soc/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -373,7 +372,7 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
 
       Future.delayed(Duration(seconds: 5), () {
         Navigator.of(context)
-            .pushNamedAndRemoveUntil(MySocRoutes.loginRoute, (route) => false);
+            .pushNamedAndRemoveUntil('/login', (route) => false);
       });
 
       // Clear form or navigate away
@@ -806,7 +805,7 @@ class _BuildingRegistrationPageState extends State<BuildingRegistrationPage> {
                         ElevatedButton(
                             onPressed: () async {
                               final location = await Navigator.pushNamed(
-                                      context, MySocRoutes.formMaps,
+                                      context, '/chooseLocation',
                                       arguments: {'location': current_location})
                                   as LatLng;
                               setState(() {

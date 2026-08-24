@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:my_soc/authentication/login.dart';
-import 'package:my_soc/common/vehicle_registry.dart';
-import 'package:my_soc/routes.dart';
+import 'package:my_soc/common/vehicles/vehicle_registry.dart';
+import 'package:my_soc/common/penalties/view_pens.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -40,7 +40,7 @@ class _UserHomeState extends State<UserHome> {
       if (!userAuth.emailVerified) {
         await Navigator.pushNamedAndRemoveUntil(
           context,
-          MySocRoutes.emailVerify,
+          '/emailverify',
           (route) => false,
         );
         throw Exception('Please verify your email first');
@@ -54,7 +54,7 @@ class _UserHomeState extends State<UserHome> {
       if (userSnapshot.docs.isEmpty) {
         await Navigator.pushNamedAndRemoveUntil(
           context,
-          MySocRoutes.chooserPage,
+          '/choose',
           (route) => false,
         );
         throw Exception('Please register your flat first before proceeding.');
@@ -69,7 +69,7 @@ class _UserHomeState extends State<UserHome> {
       if (!userDetails['isVerified']) {
         await Navigator.pushNamedAndRemoveUntil(
           context,
-          MySocRoutes.loginRoute,
+          '/login',
           (route) => false,
         );
         throw Exception(
@@ -150,20 +150,19 @@ class _UserHomeState extends State<UserHome> {
     final screen = data['screen'];
     switch (screen) {
       case "courriers":
-        Navigator.pushNamed(context, MySocRoutes.viewRecordsCourriers,
-            arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
-            });
+        Navigator.pushNamed(context, '/viewRecords', arguments: {
+          'userDetails': userDetails,
+          'buildingDetails': buildingDetails,
+        });
         break;
       case "penalties":
-        Navigator.pushNamed(context, MySocRoutes.penalties, arguments: {
+        Navigator.pushNamed(context, '/penalties', arguments: {
           'userDetails': userDetails,
           'buildingDetails': buildingDetails,
         });
         break;
       case "maintenance":
-        Navigator.pushNamed(context, MySocRoutes.generatePDF, arguments: {
+        Navigator.pushNamed(context, '/generatePDF', arguments: {
           'userDetails': userDetails,
           'buildingDetails': buildingDetails,
         });
@@ -308,7 +307,7 @@ class _UserHomeState extends State<UserHome> {
             String lName =
                 capitalize(userDetails['lastName']?.toString().trim() ?? '');
 
-            Navigator.pushNamed(context, MySocRoutes.manageUsers, arguments: {
+            Navigator.pushNamed(context, '/manageUsers', arguments: {
               'userId': userDetails.id,
               'userName': '$fName $lName'.trim(),
               'buildingId': buildingDetails.id,
@@ -317,37 +316,32 @@ class _UserHomeState extends State<UserHome> {
           },
         ),
         _buildGridButton(
-          label: "Secretary Dashboard",
-          icon: Icons.dashboard,
-          color: const Color(0xFF1E90FF),
-          onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.secDashboardUsers,
-                arguments: {
-                  'userDetails': userDetails,
-                  'buildingDetails': buildingDetails,
-                });
-          },
-        ),
-        _buildGridButton(
           label: "Assign Roles",
           icon: Icons.assignment_ind,
           color: Color(0xFF32CD32),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.secRoleBasedAccess,
-                arguments: {
-                  'userDetails': userDetails,
-                  'buildingDetails': buildingDetails,
-                });
+            Navigator.pushNamed(context, '/secRoleBasedAccess', arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
           },
         ),
         _buildGridButton(
-          label: "Add Services",
-          icon: Icons.add_circle_outline,
+          label: "About Your Society",
+          icon: Icons.info_outline,
           color: Color(0xFFFFA500),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.addServices, arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
+            String fName =
+                capitalize(userDetails['firstName']?.toString().trim() ?? '');
+            String lName =
+                capitalize(userDetails['lastName']?.toString().trim() ?? '');
+
+            Navigator.pushNamed(context, '/kySociety', arguments: {
+              'userId': userDetails.id,
+              'userName': '$fName $lName'.trim(),
+              'email': userDetails['email'] ?? '',
+              'buildingId': buildingDetails.id,
+              'designation': userDetails['designation'],
             });
           },
         ),
@@ -361,7 +355,7 @@ class _UserHomeState extends State<UserHome> {
             String lName =
                 capitalize(userDetails['lastName']?.toString().trim() ?? '');
 
-            Navigator.pushNamed(context, MySocRoutes.announcements, arguments: {
+            Navigator.pushNamed(context, '/announcements', arguments: {
               'userId': userDetails.id,
               'userName': '$fName $lName'.trim(),
               'buildingId': buildingDetails.id,
@@ -370,14 +364,40 @@ class _UserHomeState extends State<UserHome> {
           },
         ),
         _buildGridButton(
-          label: "Penalties",
+          label: "Manage Penalties",
           icon: Icons.money_off,
           color: Color(0xFF20B2AA),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.penalties, arguments: {
+            Navigator.pushNamed(context, '/penalties', arguments: {
               'userDetails': userDetails,
               'buildingDetails': buildingDetails,
             });
+          },
+        ),
+        _buildGridButton(
+          label: "View Penalties",
+          icon: Icons.receipt_long,
+          color: const Color(0xFFE94560),
+          onPressed: () {
+            String fName =
+                capitalize(userDetails['firstName']?.toString().trim() ?? '');
+            String lName =
+                capitalize(userDetails['lastName']?.toString().trim() ?? '');
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ViewPenaltiesPage(),
+                settings: RouteSettings(
+                  arguments: {
+                    'userId': userDetails.id,
+                    'userName': '$fName $lName'.trim(),
+                    'buildingId': buildingDetails.id,
+                    'designation': userDetails['designation'],
+                  },
+                ),
+              ),
+            );
           },
         ),
         _buildGridButton(
@@ -385,7 +405,7 @@ class _UserHomeState extends State<UserHome> {
           icon: Icons.security,
           color: Color(0xFF8B4513),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.viewWatchman, arguments: {
+            Navigator.pushNamed(context, '/viewWatchman', arguments: {
               'userDetails': userDetails,
               'buildingDetails': buildingDetails,
             });
@@ -396,11 +416,10 @@ class _UserHomeState extends State<UserHome> {
           icon: Icons.local_shipping,
           color: Color(0xFF6A5ACD),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.viewRecordsCourriers,
-                arguments: {
-                  'userDetails': userDetails,
-                  'buildingDetails': buildingDetails,
-                });
+            Navigator.pushNamed(context, '/viewRecords', arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
           },
         ),
         _buildGridButton(
@@ -408,11 +427,10 @@ class _UserHomeState extends State<UserHome> {
           icon: Icons.picture_as_pdf,
           color: Color(0xFFDAA520),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.viewMainatainenanceJob,
-                arguments: {
-                  'userDetails': userDetails,
-                  'buildingDetails': buildingDetails,
-                });
+            Navigator.pushNamed(context, '/viewMainatainenanceJob', arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
           },
         ),
         _buildGridButton(
@@ -420,7 +438,7 @@ class _UserHomeState extends State<UserHome> {
           icon: Icons.payment,
           color: Color.fromARGB(255, 209, 0, 164),
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.Maintain, arguments: {
+            Navigator.pushNamed(context, '/maintain', arguments: {
               'userDetails': userDetails,
               'buildingDetails': buildingDetails,
             });
@@ -431,7 +449,7 @@ class _UserHomeState extends State<UserHome> {
           color: Color(0xFF6A5ACD),
           label: 'Permissions',
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.permissions, arguments: {
+            Navigator.pushNamed(context, '/permissions', arguments: {
               'userDetails': userDetails,
               'buildingDetails': buildingDetails,
             });
@@ -442,11 +460,10 @@ class _UserHomeState extends State<UserHome> {
           color: Color(0xFF6A5ACD),
           label: 'View Permissions',
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.viewPermissions,
-                arguments: {
-                  'userDetails': userDetails,
-                  'buildingDetails': buildingDetails,
-                });
+            Navigator.pushNamed(context, '/viewPermissions', arguments: {
+              'userDetails': userDetails,
+              'buildingDetails': buildingDetails,
+            });
           },
         ),
         _buildGridButton(
@@ -460,7 +477,7 @@ class _UserHomeState extends State<UserHome> {
             // IDs and names through routing is instantaneous, consumes virtually zero memory,
             // and entirely avoids setting up a new asynchronous Stream/FutureProvider listener
             // lifecycle which would cause UI jitter.
-            Navigator.pushNamed(context, MySocRoutes.userPolls, arguments: {
+            Navigator.pushNamed(context, '/userPolls', arguments: {
               'userId': userDetails.id,
               'firstName': userDetails['firstName'],
               'lastName': userDetails['lastName'],
@@ -474,14 +491,13 @@ class _UserHomeState extends State<UserHome> {
           color: Color(0xFF6A5ACD),
           label: 'Create Polls',
           onPressed: () {
-            Navigator.pushNamed(context, MySocRoutes.userCreatePolls,
-                arguments: {
-                  'userId': userDetails.id,
-                  'firstName': userDetails['firstName'],
-                  'lastName': userDetails['lastName'],
-                  'buildingId': buildingDetails.id,
-                  'designation': userDetails['designation'],
-                });
+            Navigator.pushNamed(context, '/userCreatePolls', arguments: {
+              'userId': userDetails.id,
+              'firstName': userDetails['firstName'],
+              'lastName': userDetails['lastName'],
+              'buildingId': buildingDetails.id,
+              'designation': userDetails['designation'],
+            });
           },
         ),
         _buildGridButton(
@@ -509,15 +525,14 @@ class _UserHomeState extends State<UserHome> {
             String lName =
                 capitalize(userDetails['lastName']?.toString().trim() ?? '');
 
-            Navigator.pushNamed(context, MySocRoutes.userComplaints,
-                arguments: {
-                  'userId': userDetails.id,
-                  'ownerName': '$fName $lName'.trim(),
-                  'buildingId': buildingDetails.id,
-                  'flatNumber':
-                      '${userDetails['wing']} - ${userDetails['flatNumber']}',
-                  'designation': userDetails['designation'],
-                });
+            Navigator.pushNamed(context, '/userComplaints', arguments: {
+              'userId': userDetails.id,
+              'ownerName': '$fName $lName'.trim(),
+              'buildingId': buildingDetails.id,
+              'flatNumber':
+                  '${userDetails['wing']} - ${userDetails['flatNumber']}',
+              'designation': userDetails['designation'],
+            });
           },
         ),
       ],

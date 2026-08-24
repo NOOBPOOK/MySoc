@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_soc/providers/admin_provider.dart';
-import 'package:my_soc/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:my_soc/widgets/custom_toast.dart';
 import 'package:my_soc/utils/email_service.dart';

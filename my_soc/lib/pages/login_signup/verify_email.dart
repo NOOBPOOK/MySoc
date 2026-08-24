@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:my_soc/routes.dart';
-
 class VerifyEmailMessagePage extends StatefulWidget {
   const VerifyEmailMessagePage({super.key});
 
@@ -27,7 +25,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
         FirebaseAuth.instance.currentUser!.emailVerified;
     if (isEmailVerified) {
       timer?.cancel();
-      await Navigator.pushNamed(context, MySocRoutes.chooserPage);
+      await Navigator.pushNamed(context, '/choose');
       setState(() {});
     }
   }
@@ -41,7 +39,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
     } on FirebaseAuthException catch (e) {
       print(e.toString());
       await FirebaseAuth.instance.signOut();
-      await Navigator.pushNamed(context, MySocRoutes.signupRoute);
+      await Navigator.pushNamed(context, '/signup');
     }
   }
 
@@ -113,7 +111,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
                   ElevatedButton(
                     onPressed: () {
                       FirebaseAuth.instance.signOut();
-                      Navigator.pushNamed(context, MySocRoutes.loginRoute);
+                      Navigator.pushNamed(context, '/login');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -146,9 +144,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
 // import 'dart:async';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
-// import 'package:my_soc/routes.dart';
-
-// class VerifyEmailMessagePage extends StatefulWidget {
+// // class VerifyEmailMessagePage extends StatefulWidget {
 //   const VerifyEmailMessagePage({super.key});
 
 //   @override
@@ -170,7 +166,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
 //         await FirebaseAuth.instance.currentUser!.emailVerified;
 //     if (isEmailVerified) {
 //       timer?.cancel();
-//       await Navigator.pushNamed(context, MySocRoutes.chooserPage);
+//       await Navigator.pushNamed(context, '/choose');
 //       setState(() {});
 //     }
 //   }
@@ -184,7 +180,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
 //     } on FirebaseAuthException catch (e) {
 //       print(e.toString());
 //       await FirebaseAuth.instance.signOut();
-//       await Navigator.pushNamed(context, MySocRoutes.signupRoute);
+//       await Navigator.pushNamed(context, '/signup');
 //     }
 //   }
 
@@ -203,7 +199,7 @@ class _VerifyEmailMessagePageState extends State<VerifyEmailMessagePage> {
 //         ElevatedButton(
 //             onPressed: () {
 //               FirebaseAuth.instance.signOut();
-//               Navigator.pushNamed(context, MySocRoutes.loginRoute);
+//               Navigator.pushNamed(context, '/login');
 //             },
 //             child: const Text("Cancel Verification"))
 //       ],

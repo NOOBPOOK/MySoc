@@ -7,7 +7,6 @@ import 'package:my_soc/authentication/forgotPassord.dart';
 import 'package:my_soc/authentication/signup.dart';
 import 'package:my_soc/utils/app_logger.dart';
 import 'package:my_soc/watchman/watch_login.dart';
-import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 
 class Login extends StatefulWidget {
@@ -32,7 +31,7 @@ class _LoginState extends State<Login> {
     // Check if user is already signed in
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (FirebaseAuth.instance.currentUser != null) {
-        Navigator.pushReplacementNamed(context, MySocRoutes.userDashboard);
+        Navigator.pushReplacementNamed(context, '/userdash');
       }
     });
   }
@@ -52,7 +51,7 @@ class _LoginState extends State<Login> {
         email: username.text.trim(),
         password: passwd.text.trim(),
       );
-      await Navigator.pushNamed(context, MySocRoutes.userDashboard);
+      await Navigator.pushNamed(context, '/userdash');
     } on FirebaseAuthException catch (e) {
       print(e.toString());
       setState(() {});
@@ -113,7 +112,7 @@ class _LoginState extends State<Login> {
 
       await Navigator.pushNamedAndRemoveUntil(
         context,
-        MySocRoutes.userDashboard,
+        '/userdash',
         (route) => false,
       );
     } on GoogleSignInException catch (e) {
@@ -136,7 +135,7 @@ class _LoginState extends State<Login> {
       logger.i("Admin backdoor triggered");
       Navigator.pushNamedAndRemoveUntil(
         context,
-        MySocRoutes.adminHome,
+        '/adminHome',
         (route) => false,
       );
       return;
@@ -412,7 +411,7 @@ class _LoginState extends State<Login> {
               recognizer: TapGestureRecognizer()
                 ..onTap = () async {
                   context.pushNamedTransition(
-                    routeName: MySocRoutes.signupRoute,
+                    routeName: '/signup',
                     type: PageTransitionType.rightToLeft,
                     duration: Duration(milliseconds: 300),
                   );

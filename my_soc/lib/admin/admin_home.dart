@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:my_soc/routes.dart';
 import 'package:my_soc/utils/app_logger.dart';
 import 'package:my_soc/widgets/faded_scroll_mask.dart';
 import 'package:my_soc/providers/admin_provider.dart';

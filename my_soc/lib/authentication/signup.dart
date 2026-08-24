@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 
 class Signup extends StatefulWidget {
@@ -43,7 +42,7 @@ class _SignupState extends State<Signup> {
       await Future.delayed(const Duration(seconds: 2));
 
       await context.pushNamedTransition(
-        routeName: MySocRoutes.emailVerify,
+        routeName: '/emailverify',
         type: PageTransitionType.fade,
         duration: Duration(milliseconds: 200),
       );
@@ -103,7 +102,7 @@ class _SignupState extends State<Signup> {
 
       await Navigator.pushNamedAndRemoveUntil(
         context,
-        MySocRoutes.userDashboard,
+        '/userdash',
         (route) => false,
       );
     } on GoogleSignInException catch (e) {

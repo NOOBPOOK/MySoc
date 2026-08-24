@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:my_soc/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -365,7 +364,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
 
       Future.delayed(Duration(seconds: 5), () {
         Navigator.pushNamedAndRemoveUntil(
-            context, MySocRoutes.loginRoute, (route) => false);
+            context, '/login', (route) => false);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

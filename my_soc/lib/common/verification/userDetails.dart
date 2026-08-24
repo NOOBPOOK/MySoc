@@ -79,22 +79,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
     );
   }
 
-  // UI: Section Header
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, top: 4.0),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontFamily: "Poppins",
-          fontWeight: FontWeight.w700,
-          fontSize: 16,
-          color: Color(0xFF222A54),
-        ),
-      ),
-    );
-  }
-
   String _formatTimestamp(dynamic timestamp) {
     if (timestamp == null) return 'N/A';
     if (timestamp is Timestamp) {
@@ -117,8 +101,10 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
     if (verifiedDate == null || verifiedDate is! Timestamp) return 0;
     final verifiedDateTime = verifiedDate.toDate();
     final currentDateTime = DateTime.now();
-    final verifiedDateOnly = DateTime(verifiedDateTime.year, verifiedDateTime.month, verifiedDateTime.day);
-    final currentDateOnly = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day);
+    final verifiedDateOnly = DateTime(
+        verifiedDateTime.year, verifiedDateTime.month, verifiedDateTime.day);
+    final currentDateOnly = DateTime(
+        currentDateTime.year, currentDateTime.month, currentDateTime.day);
     final daysPassed = currentDateOnly.difference(verifiedDateOnly).inDays;
     return daysPassed < 0 ? 0 : daysPassed;
   }
@@ -156,7 +142,9 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
   }
 
   Future<void> _approveUser(BuildContext context) async {
-    if (!_personalInfoChecked || !_residenceDetailsChecked || !_registeredVehiclesChecked) {
+    if (!_personalInfoChecked ||
+        !_residenceDetailsChecked ||
+        !_registeredVehiclesChecked) {
       CustomToast.show(
         context,
         type: -1,
@@ -166,17 +154,16 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
     }
     logger.i('_approveUser: starting approval for userId: $userId');
     try {
-      final currentUserEmail = FirebaseAuth.instance.currentUser?.email ?? 'Unknown Admin';
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({
+      final currentUserEmail =
+          FirebaseAuth.instance.currentUser?.email ?? 'Unknown Admin';
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'isVerified': true,
         'verifiedBy': currentUserEmail,
         'verifiedDate': FieldValue.serverTimestamp(),
         'lastUpdated': FieldValue.serverTimestamp(),
       });
-      logger.i('_approveUser: successfully approved userId: $userId by $currentUserEmail');
+      logger.i(
+          '_approveUser: successfully approved userId: $userId by $currentUserEmail');
       if (context.mounted) {
         CustomToast.show(
           context,
@@ -185,7 +172,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
         );
       }
     } catch (e) {
-      logger.e('_approveUser: failed to approve userId: $userId with error: $e');
+      logger
+          .e('_approveUser: failed to approve userId: $userId with error: $e');
       if (context.mounted) {
         CustomToast.show(
           context,
@@ -362,7 +350,10 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
 
           final createdAt = data['createdAt'];
           final lastUpdated = data['lastUpdated'];
-          final verifiedBy = data['verifiedBy']?.toString().trim().isNotEmpty == true ? data['verifiedBy'].toString().trim() : 'N/A';
+          final verifiedBy =
+              data['verifiedBy']?.toString().trim().isNotEmpty == true
+                  ? data['verifiedBy'].toString().trim()
+                  : 'N/A';
           final verifiedDate = data['verifiedDate'];
 
           final createdAtFormatted = _formatTimestamp(createdAt);
@@ -437,7 +428,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                                   decoration: BoxDecoration(
                                     color: isVerified
                                         ? Colors.green.shade400.withOpacity(0.3)
-                                        : Colors.orange.shade400.withOpacity(0.3),
+                                        : Colors.orange.shade400
+                                            .withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(30),
                                     border: Border.all(
                                       color: isVerified
@@ -494,7 +486,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                                   ),
                                 ),
                                 Text(
-                                  _calculateDaysPassedCount(verifiedDate).toString(),
+                                  _calculateDaysPassedCount(verifiedDate)
+                                      .toString(),
                                   style: const TextStyle(
                                     fontFamily: "Poppins",
                                     fontSize: 20,
@@ -517,10 +510,13 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                           ],
                         ],
                       ),
-                      const Divider(color: Colors.white24, height: 20, thickness: 1),
-                      _buildHeaderMetaRow(Icons.calendar_today_outlined, "Created:", createdAtFormatted),
+                      const Divider(
+                          color: Colors.white24, height: 20, thickness: 1),
+                      _buildHeaderMetaRow(Icons.calendar_today_outlined,
+                          "Created:", createdAtFormatted),
                       const SizedBox(height: 6),
-                      _buildHeaderMetaRow(Icons.edit_calendar_outlined, "Last Updated:", lastUpdatedFormatted),
+                      _buildHeaderMetaRow(Icons.edit_calendar_outlined,
+                          "Last Updated:", lastUpdatedFormatted),
                     ],
                   ),
                 ),
@@ -530,7 +526,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                 if (isVerified) ...[
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14.0, vertical: 12.0),
                     decoration: BoxDecoration(
                       color: const Color(0xFF222A54),
                       borderRadius: BorderRadius.circular(16),
@@ -547,7 +544,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                       children: [
                         Row(
                           children: const [
-                            Icon(Icons.verified_user_outlined, color: Colors.white, size: 18),
+                            Icon(Icons.verified_user_outlined,
+                                color: Colors.white, size: 18),
                             SizedBox(width: 8),
                             Text(
                               "Verification Audit Logs",
@@ -560,10 +558,13 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                             ),
                           ],
                         ),
-                        const Divider(color: Colors.white24, height: 16, thickness: 1),
-                        _buildHeaderMetaRow(Icons.person_pin_outlined, "Verified By:", verifiedBy),
+                        const Divider(
+                            color: Colors.white24, height: 16, thickness: 1),
+                        _buildHeaderMetaRow(Icons.person_pin_outlined,
+                            "Verified By:", verifiedBy),
                         const SizedBox(height: 6),
-                        _buildHeaderMetaRow(Icons.verified_user_outlined, "Verified Date:", verifiedDateFormatted),
+                        _buildHeaderMetaRow(Icons.verified_user_outlined,
+                            "Verified Date:", verifiedDateFormatted),
                       ],
                     ),
                   ),
@@ -621,7 +622,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                                   value: _personalInfoChecked,
                                   activeColor: Colors.green,
                                   checkColor: Colors.white,
-                                  side: const BorderSide(color: Colors.white54, width: 1.5),
+                                  side: const BorderSide(
+                                      color: Colors.white54, width: 1.5),
                                   onChanged: (val) {
                                     setState(() {
                                       _personalInfoChecked = val ?? false;
@@ -720,7 +722,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                                   value: _residenceDetailsChecked,
                                   activeColor: Colors.green,
                                   checkColor: Colors.white,
-                                  side: const BorderSide(color: Colors.white54, width: 1.5),
+                                  side: const BorderSide(
+                                      color: Colors.white54, width: 1.5),
                                   onChanged: (val) {
                                     setState(() {
                                       _residenceDetailsChecked = val ?? false;
@@ -807,7 +810,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                                   value: _registeredVehiclesChecked,
                                   activeColor: Colors.green,
                                   checkColor: Colors.white,
-                                  side: const BorderSide(color: Colors.white54, width: 1.5),
+                                  side: const BorderSide(
+                                      color: Colors.white54, width: 1.5),
                                   onChanged: (val) {
                                     setState(() {
                                       _registeredVehiclesChecked = val ?? false;

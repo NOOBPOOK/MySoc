@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_soc/routes.dart';
 import 'package:my_soc/utils/app_logger.dart';
 import 'package:my_soc/providers/admin_provider.dart';
 
@@ -13,7 +12,7 @@ class AdminDashboardView extends ConsumerWidget {
   // Backend: Handle logout functionality
   void _handleLogout(BuildContext context) {
     logger.i('_handleLogout starting');
-    Navigator.pushReplacementNamed(context, MySocRoutes.loginRoute);
+    Navigator.pushReplacementNamed(context, '/login');
     logger.i('_handleLogout completed successfully');
   }
 
@@ -56,7 +55,7 @@ class AdminDashboardView extends ConsumerWidget {
           GestureDetector(
             onTap: () {
               logger.i('Map widget clicked, navigating to admin maps');
-              Navigator.pushNamed(context, MySocRoutes.adminMaps);
+              Navigator.pushNamed(context, '/adminMaps');
             },
             child: Container(
               height: MediaQuery.of(context).size.height * 0.17,

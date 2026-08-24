@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_soc/authentication/login.dart';
-import 'package:my_soc/routes.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatelessWidget {
