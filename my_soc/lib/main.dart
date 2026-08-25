@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:my_soc/common/packages/viewPack.dart';
 import 'package:my_soc/common/polls/polls.dart';
 import 'package:my_soc/common/polls/create_polls.dart';
 import 'package:my_soc/common/polls/poll_votes_page.dart';
@@ -20,16 +21,13 @@ import 'package:my_soc/common/announcements/announce.dart';
 import 'package:my_soc/common/announcements/create_announce.dart';
 import 'package:my_soc/common/verification/usersView.dart';
 import 'package:my_soc/common/verification/userDetails.dart';
-import 'package:my_soc/pages/secretary/create_watchman.dart';
 import 'package:my_soc/pages/secretary/generate_maintain.dart';
 import 'package:my_soc/pages/secretary/maintain.dart';
 import 'package:my_soc/common/penalties/manage_pens.dart';
 import 'package:my_soc/common/penalties/detail_pens.dart';
 import 'package:my_soc/pages/secretary/permissions_page.dart';
-import 'package:my_soc/pages/secretary/viewLogs.dart';
 import 'package:my_soc/pages/secretary/view_maintain.dart';
 import 'package:my_soc/pages/secretary/view_permissions.dart';
-import 'package:my_soc/pages/secretary/watchman.dart';
 import 'package:my_soc/watchman/watch_home.dart';
 import 'package:my_soc/watchman/watch_login.dart';
 import 'package:my_soc/practice/maps.dart';
@@ -40,7 +38,8 @@ import 'package:my_soc/pages/login_signup/signup.dart';
 import 'package:my_soc/pages/login_signup/userForm.dart';
 import 'package:my_soc/pages/login_signup/user_home.dart';
 import 'package:my_soc/pages/login_signup/verify_email.dart';
-import 'package:my_soc/practice/practice.dart';
+import 'package:my_soc/common/security/security.dart';
+import 'package:my_soc/common/security/secDetails.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_soc/authentication/login.dart';
@@ -129,10 +128,8 @@ class MyApp extends StatelessWidget {
           '/announcements': (context) => AnnouncementsPage(),
           '/createAnnouncements': (context) => const CreateAnnouncementPage(),
           '/penalties': (context) => const IssuePenaltyPage(),
-          '/viewWatchman': (context) => WatchmanPage(),
           '/watchmanLogin': (context) => WatchmanLogin(),
           '/watchmanHome': (context) => WatchmanHome(),
-          '/viewRecords': (context) => ViewRecordsCourriers(),
           '/adminMaps': (context) => const AdminMapsView(),
           '/chooseLocation': (context) => ChooseLocation(),
           '/adminPayments': (context) => const AdminPaymentsView(),
@@ -150,6 +147,9 @@ class MyApp extends StatelessWidget {
           '/viewDocDetails': (context) => ViewAllDocDetails(),
           '/maintain': (context) => Maintain(),
           '/penaltyDetails': (context) => const PenaltyDetailsPage(),
+          '/viewPackages': (context) => const ViewPackagesPage(),
+          '/securitySettings': (context) => const BuildingSecurityPage(),
+          '/securityDetails': (context) => const SecurityDetailsPage(),
 
           // For testing UI we will use this route
           '/home': (context) => HomeScreen(),

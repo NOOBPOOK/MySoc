@@ -89,3 +89,16 @@ final watchmanLogsProvider = StreamProvider.autoDispose<QuerySnapshot>((ref) {
       // .where('timestamp', isGreaterThan: prev)
       .snapshots();
 });
+
+/// StreamProvider that fetches real-time watchmen list for a specific building.
+final watchmenStreamProvider = StreamProvider.autoDispose.family<QuerySnapshot, String>((ref, buildingId) {
+  logger.d('watchmenStreamProvider stream initialized for buildingId: $buildingId');
+  if (buildingId.isEmpty) {
+    return const Stream.empty();
+  }
+  return FirebaseFirestore.instance
+      .collection('buildings')
+      .doc(buildingId)
+      .collection('watchmen')
+      .snapshots();
+});

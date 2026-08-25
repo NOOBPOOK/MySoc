@@ -150,9 +150,11 @@ class _UserHomeState extends State<UserHome> {
     final screen = data['screen'];
     switch (screen) {
       case "courriers":
-        Navigator.pushNamed(context, '/viewRecords', arguments: {
-          'userDetails': userDetails,
-          'buildingDetails': buildingDetails,
+        Navigator.pushNamed(context, '/viewPackages', arguments: {
+          'userId': userDetails.id,
+          'buildingId': buildingDetails.id,
+          'wing': userDetails['wing'] ?? '',
+          'flatNumber': userDetails['flatNumber'] ?? '',
         });
         break;
       case "penalties":
@@ -400,28 +402,7 @@ class _UserHomeState extends State<UserHome> {
             );
           },
         ),
-        _buildGridButton(
-          label: "Watchmen",
-          icon: Icons.security,
-          color: Color(0xFF8B4513),
-          onPressed: () {
-            Navigator.pushNamed(context, '/viewWatchman', arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
-            });
-          },
-        ),
-        _buildGridButton(
-          label: "Couriers",
-          icon: Icons.local_shipping,
-          color: Color(0xFF6A5ACD),
-          onPressed: () {
-            Navigator.pushNamed(context, '/viewRecords', arguments: {
-              'userDetails': userDetails,
-              'buildingDetails': buildingDetails,
-            });
-          },
-        ),
+
         _buildGridButton(
           label: "Maintenance PDF",
           icon: Icons.picture_as_pdf,
@@ -531,6 +512,32 @@ class _UserHomeState extends State<UserHome> {
               'buildingId': buildingDetails.id,
               'flatNumber':
                   '${userDetails['wing']} - ${userDetails['flatNumber']}',
+              'designation': userDetails['designation'],
+            });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.inventory_2,
+          color: const Color(0xFFFF8C00),
+          label: 'Your Packages',
+          onPressed: () {
+            Navigator.pushNamed(context, '/viewPackages', arguments: {
+              'userId': userDetails.id,
+              'buildingId': buildingDetails.id,
+              'wing': userDetails['wing'] ?? '',
+              'flatNumber': userDetails['flatNumber'] ?? '',
+            });
+          },
+        ),
+        _buildGridButton(
+          icon: Icons.security_rounded,
+          color: const Color(0xFF4682B4),
+          label: 'Building Security',
+          onPressed: () {
+            Navigator.pushNamed(context, '/securitySettings', arguments: {
+              'userId': userDetails.id,
+              'userEmail': userDetails['email'] ?? '',
+              'buildingId': buildingDetails.id,
               'designation': userDetails['designation'],
             });
           },

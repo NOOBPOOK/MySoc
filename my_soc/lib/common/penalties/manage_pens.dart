@@ -22,6 +22,22 @@ class _IssuePenaltyPageState extends ConsumerState<IssuePenaltyPage> {
   String _searchQuery = '';
   String _statusFilter = 'All'; // 'All', 'Paid', 'Unpaid'
 
+  // Backend: Helper to capitalize and trim name parts
+  String _formatName(String name) {
+    logger.d('_IssuePenaltyPageState: _formatName started with name: "$name"');
+    if (name.isEmpty) {
+      logger.d('_IssuePenaltyPageState: _formatName completed with empty name');
+      return '';
+    }
+    final parts = name.trim().replaceAll(RegExp(r'\s+'), ' ').split(' ');
+    final formatted = parts.map((part) {
+      if (part.isEmpty) return '';
+      return part[0].toUpperCase() + part.substring(1).toLowerCase();
+    }).join(' ');
+    logger.d('_IssuePenaltyPageState: _formatName completed with formatted name: "$formatted"');
+    return formatted;
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -36,11 +52,9 @@ class _IssuePenaltyPageState extends ConsumerState<IssuePenaltyPage> {
 
         if (userDetails != null && buildingDetails != null) {
           userId = userDetails.id ?? '';
-          final fName = (userDetails['firstName'] ?? '').toString().trim();
-          final lName = (userDetails['lastName'] ?? '').toString().trim();
-          userName =
-              '${fName.isNotEmpty ? fName[0].toUpperCase() + fName.substring(1).toLowerCase() : ''} ${lName.isNotEmpty ? lName[0].toUpperCase() + lName.substring(1).toLowerCase() : ''}'
-                  .trim();
+          final fName = (userDetails['firstName'] ?? '').toString();
+          final lName = (userDetails['lastName'] ?? '').toString();
+          userName = _formatName('$fName $lName');
 
           if (buildingDetails is DocumentSnapshot) {
             buildingId = buildingDetails.id;
@@ -52,7 +66,7 @@ class _IssuePenaltyPageState extends ConsumerState<IssuePenaltyPage> {
           designation = userDetails['designation'] ?? 0;
         } else {
           userId = args['userId'] ?? '';
-          userName = args['userName'] ?? '';
+          userName = _formatName(args['userName'] ?? '');
           buildingId = args['buildingId'] ?? '';
           designation = args['designation'] ?? 0;
         }
@@ -252,7 +266,7 @@ class _IssuePenaltyPageState extends ConsumerState<IssuePenaltyPage> {
 
   // UI: Build Individual Penalty List Item Card
   Widget _buildPenaltyCard(Map<String, dynamic> penalty) {
-    final residentName = penalty['residentName'] ?? 'Unknown';
+    final residentName = _formatName(penalty['residentName'] ?? 'Unknown');
     final reason = penalty['reason'] ?? 'No reason';
     final amount = penalty['amount']?.toString() ?? '0';
     final isPaid = penalty['status'] == true;
