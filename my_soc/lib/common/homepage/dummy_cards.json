@@ -1,0 +1,32 @@
+[
+  {
+    "icon": "announcement",
+    "title": "Announcements",
+    "message": "Meeting scheduled for this Sunday at 10 AM in the main clubhouse.",
+    "route": "/announcements"
+  },
+  {
+    "icon": "payment",
+    "title": "Maintenance Bills",
+    "message": "August maintenance bill generated. Clear before due date.",
+    "route": "/maintainDash"
+  },
+  {
+    "icon": "poll",
+    "title": "Active Polls",
+    "message": "Vote on the proposal for installing solar panels in the society.",
+    "route": "/userPolls"
+  },
+  {
+    "icon": "complaint",
+    "title": "Raise Complaint",
+    "message": "Got issues? File a formal complaint directly to the committee.",
+    "route": "/userComplaints"
+  },
+  {
+    "icon": "vehicle",
+    "title": "Vehicle Registry",
+    "message": "Add or manage registered vehicles linked with your flat details.",
+    "route": "/testing"
+  }
+]

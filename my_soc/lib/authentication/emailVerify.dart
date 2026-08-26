@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:my_soc/pages/login_signup/chooser.dart';
+import 'package:my_soc/authentication/chooser.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +11,6 @@ class Emailverify extends StatefulWidget {
   @override
   State<Emailverify> createState() => _EmailverifyState();
 }
-
 
 class _EmailverifyState extends State<Emailverify> {
   String emailText = "Send Email";
@@ -34,8 +33,7 @@ class _EmailverifyState extends State<Emailverify> {
   // Function which checks whether the email is verified or not
   Future<void> checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
-    var isEmailVerified =
-        FirebaseAuth.instance.currentUser!.emailVerified;
+    var isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     if (isEmailVerified) {
       listen?.cancel();
       Future.delayed(Duration(seconds: 2), () {

@@ -116,6 +116,7 @@ flutter:
       - C:/GithubRepos/MySoc/my_soc/lib/images/parking.jpg
       - C:/GithubRepos/MySoc/my_soc/lib/images/emailVerify.png
       - lib/images/adminButton.png
+      - lib/common/homepage/dummy_cards.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

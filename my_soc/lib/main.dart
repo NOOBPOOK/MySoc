@@ -14,14 +14,13 @@ import 'package:my_soc/authentication/signup.dart';
 import 'package:my_soc/firebase_options.dart';
 import 'package:my_soc/forms/buildForm.dart';
 import 'package:my_soc/forms/userForm.dart';
-import 'package:my_soc/pages/login_signup/buildingForm.dart';
-import 'package:my_soc/pages/login_signup/chooseMap.dart';
-import 'package:my_soc/pages/login_signup/chooser.dart';
+
+import 'package:my_soc/forms/chooseMap.dart';
+import 'package:my_soc/authentication/chooser.dart';
 import 'package:my_soc/common/announcements/announce.dart';
 import 'package:my_soc/common/announcements/create_announce.dart';
 import 'package:my_soc/common/verification/usersView.dart';
 import 'package:my_soc/common/verification/userDetails.dart';
-import 'package:my_soc/pages/secretary/generate_maintain.dart';
 import 'package:my_soc/pages/secretary/maintain.dart';
 import 'package:my_soc/common/penalties/manage_pens.dart';
 import 'package:my_soc/common/penalties/detail_pens.dart';
@@ -32,13 +31,11 @@ import 'package:my_soc/watchman/watch_home.dart';
 import 'package:my_soc/watchman/watch_login.dart';
 import 'package:my_soc/common/members/assign_roles.dart';
 import 'package:my_soc/common/members/kysociety.dart';
-import 'package:my_soc/pages/login_signup/signup.dart';
-import 'package:my_soc/pages/login_signup/userForm.dart';
-import 'package:my_soc/pages/login_signup/user_home.dart';
-import 'package:my_soc/pages/login_signup/verify_email.dart';
+
 import 'package:my_soc/common/security/security.dart';
 import 'package:my_soc/common/security/secDetails.dart';
 import 'package:my_soc/common/sec_maintain/maintainDash.dart';
+import 'package:my_soc/common/homepage/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_soc/authentication/login.dart';
@@ -107,18 +104,12 @@ class MyApp extends StatelessWidget {
         ),
         // theme: MyThemes.lightTheme(context),
         // darkTheme: MyThemes.darkTheme(context),
-        // initialRoute: '/signup',
-        // initialRoute:
-        // MySocRoutes.testing, // Set the initial route to the login page
-        // home: SafeArea(child: userExists ? UserHome() : LoginPage()),
-        home: Login(),
+        home: const StartScreen(),
         routes: {
-          // '/signup': (context) => const SignupPage(),
           // '/login': (context) => const LoginPage(),
           // '/emailverify': (context) => const Emailverify(),
-          '/userdash': (context) => const UserHome(),
-          '/buildingForm': (context) => const BuildingRegistrationPage(),
-          '/userForm': (context) => UserRegistrationPage(),
+          '/userdash': (context) => const HomeScreen(),
+          '/userForm': (context) => const Userform(),
           '/choose': (context) => const ChooserPage(),
           '/kySociety': (context) => const KySocietyPage(),
           '/secRoleBasedAccess': (context) => const AssignRolesPage(),
@@ -132,7 +123,6 @@ class MyApp extends StatelessWidget {
           '/adminMaps': (context) => const AdminMapsView(),
           '/chooseLocation': (context) => ChooseLocation(),
           '/adminPayments': (context) => const AdminPaymentsView(),
-          '/generatePDF': (context) => CreateMaintain(),
           '/viewMainatainenanceJob': (context) => ViewMainatainenanceJob(),
           //'/viewDocDetails': (context) => ViewAllDocDetails(),
           '/permissions': (context) => PermissionsPage(),
@@ -159,6 +149,7 @@ class MyApp extends StatelessWidget {
 
           // Currently testing route
           '/testing': (context) => Signup(),
+          '/start': (context) => const StartScreen(),
         });
   }
 }
