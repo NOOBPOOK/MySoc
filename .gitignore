@@ -1,0 +1,192 @@
+# -------------------------------------------------------
+# Flutter / Dart / Pub
+# -------------------------------------------------------
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Dart generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# -------------------------------------------------------
+# Firebase & Secrets
+# -------------------------------------------------------
+# Google Services config files (contain API keys)
+google-services.json
+GoogleService-Info.plist
+
+# Environment variable files
+.env
+.env.*
+*.env
+
+# Firebase local emulator data
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+
+# -------------------------------------------------------
+# Android
+# -------------------------------------------------------
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+**/*.keystore
+**/*.jks
+
+# Android Studio build artifacts
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+
+# -------------------------------------------------------
+# iOS / macOS
+# -------------------------------------------------------
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# macOS
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/
+
+# CocoaPods
+**/Podfile.lock
+
+# -------------------------------------------------------
+# Web
+# -------------------------------------------------------
+**/web/Flutter/**
+
+# -------------------------------------------------------
+# Windows
+# -------------------------------------------------------
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugins.cmake
+**/windows/flutter/ephemeral/
+
+# -------------------------------------------------------
+# Linux
+# -------------------------------------------------------
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
+**/linux/flutter/ephemeral/
+
+# -------------------------------------------------------
+# IDE & Editor
+# -------------------------------------------------------
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code (keep launch.json if you share debug configurations)
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Emacs
+*~
+
+# Vim
+*.swp
+*.swo
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# -------------------------------------------------------
+# OS & System Files
+# -------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# -------------------------------------------------------
+# Logs & Temporary Files
+# -------------------------------------------------------
+*.class
+*.log
+*.pyc
+*.lock
+*.tmp
+*.bak
+*.orig
+.history/
+.buildlog/
+migrate_working_dir/
+
+# -------------------------------------------------------
+# Version Control Tools
+# -------------------------------------------------------
+.svn/
+.hg/
+.atom/
+
+# -------------------------------------------------------
+# Symbolication & Obfuscation Artifacts
+# -------------------------------------------------------
+app.*.symbols
+app.*.map.json
+
+# -------------------------------------------------------
+# Coverage & Test Output
+# -------------------------------------------------------
+coverage/
+.coverage
+lcov.info
+test/.test_coverage.dart
+
+# -------------------------------------------------------
+# Miscellaneous
+# -------------------------------------------------------
+pubspec.lock
