@@ -542,6 +542,19 @@ class _UserHomeState extends State<UserHome> {
             });
           },
         ),
+        _buildGridButton(
+          icon: Icons.dashboard_rounded,
+          color: const Color(0xFF222A54),
+          label: 'Maintenance Dashboard',
+          onPressed: () {
+            Navigator.pushNamed(context, '/maintainDash', arguments: {
+              'userId': userDetails.id,
+              'userEmail': userDetails['email'] ?? '',
+              'designation': userDetails['designation'],
+              'buildingId': buildingDetails.id,
+            });
+          },
+        ),
       ],
     );
   }

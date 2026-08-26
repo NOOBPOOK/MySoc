@@ -30,8 +30,6 @@ import 'package:my_soc/pages/secretary/view_maintain.dart';
 import 'package:my_soc/pages/secretary/view_permissions.dart';
 import 'package:my_soc/watchman/watch_home.dart';
 import 'package:my_soc/watchman/watch_login.dart';
-import 'package:my_soc/practice/maps.dart';
-import 'package:my_soc/practice/practice_images.dart';
 import 'package:my_soc/common/members/assign_roles.dart';
 import 'package:my_soc/common/members/kysociety.dart';
 import 'package:my_soc/pages/login_signup/signup.dart';
@@ -40,6 +38,7 @@ import 'package:my_soc/pages/login_signup/user_home.dart';
 import 'package:my_soc/pages/login_signup/verify_email.dart';
 import 'package:my_soc/common/security/security.dart';
 import 'package:my_soc/common/security/secDetails.dart';
+import 'package:my_soc/common/sec_maintain/maintainDash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_soc/authentication/login.dart';
@@ -150,6 +149,7 @@ class MyApp extends StatelessWidget {
           '/viewPackages': (context) => const ViewPackagesPage(),
           '/securitySettings': (context) => const BuildingSecurityPage(),
           '/securityDetails': (context) => const SecurityDetailsPage(),
+          '/maintainDash': (context) => const MaintainDash(),
 
           // For testing UI we will use this route
           '/home': (context) => HomeScreen(),
