@@ -98,23 +98,23 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - C:/GithubRepos/MySoc/my_soc/.env
-      - C:/GithubRepos/MySoc/my_soc/lib/location.json
-      - C:/GithubRepos/MySoc/my_soc/lib/images/google.png
-      - C:/GithubRepos/MySoc/my_soc/lib/images/maps.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/imageIcon.png
-      - C:/GithubRepos/MySoc/my_soc/lib/images/backup.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/fire.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/garden.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/gym.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/hall.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/lift.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/rainwater.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/survillance.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/swimming.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/playarea.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/parking.jpg
-      - C:/GithubRepos/MySoc/my_soc/lib/images/emailVerify.png
+      - C:/GithubRepos/MySoc/.env
+      - C:/GithubRepos/MySoc/lib/location.json
+      - C:/GithubRepos/MySoc/lib/images/google.png
+      - C:/GithubRepos/MySoc/lib/images/maps.jpg
+      - C:/GithubRepos/MySoc/lib/images/imageIcon.png
+      - C:/GithubRepos/MySoc/lib/images/backup.jpg
+      - C:/GithubRepos/MySoc/lib/images/fire.jpg
+      - C:/GithubRepos/MySoc/lib/images/garden.jpg
+      - C:/GithubRepos/MySoc/lib/images/gym.jpg
+      - C:/GithubRepos/MySoc/lib/images/hall.jpg
+      - C:/GithubRepos/MySoc/lib/images/lift.jpg
+      - C:/GithubRepos/MySoc/lib/images/rainwater.jpg
+      - C:/GithubRepos/MySoc/lib/images/survillance.jpg
+      - C:/GithubRepos/MySoc/lib/images/swimming.jpg
+      - C:/GithubRepos/MySoc/lib/images/playarea.jpg
+      - C:/GithubRepos/MySoc/lib/images/parking.jpg
+      - C:/GithubRepos/MySoc/lib/images/emailVerify.png
       - lib/images/adminButton.png
       - lib/common/homepage/dummy_cards.json
 
